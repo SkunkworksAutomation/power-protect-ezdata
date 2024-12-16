@@ -17,8 +17,6 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 - No additional dependencies
 
 # Notes
-- The csv versions of the reports are not tied to the config. Any custom parameters you need are contained within each report script.
-
 > [!WARNING]
 > Some of these data extracts can potentially be very large. Ensure you are adjusting any parameters within reasonable ranges.
 
