@@ -7,7 +7,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 
 # Skills requirements
 - Knowledge of simple JSON structures
-- Knowledge of executing basic PowerShell commands
+- Knowledge of executing basic PowerShell cmdlets
 
 # Dependencies
 - Windows 10 or 11
