@@ -169,7 +169,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 - Select the network tab in the debugging tools
 - In the powerProtect Data Manager UI select Administration -> Audit Logs
 - In your debugging tools select the audit-logs node in the name column
-![browser-debugging](/Assets/browser-debugging.png)
+![browser-debugging1](/Assets/browser-debugging1.png)
 - From the image above we can see that we the value of the apiEndpoint which in our case will be audit-logs
 - The apiVersion will be 2
 - We can leave the apiPaging set to random as that is the default paging method for the REST API
@@ -221,6 +221,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 }
 ```
 - Clicking over to the response tab in the browser debugging tools will let you see the fields so we can add some.
+![browser-debugging2](/Assets/browser-debugging2.png)
 - Now lets select a sortField from the list contained witin the contents array and set the value of sortField to changedTime
 - Now lets replace the sortField in the filters array to changedTime
 - Next lets defined the first field as changedTime for both label and value
