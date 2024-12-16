@@ -124,3 +124,11 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
         - duration: Returned in miliseconds from the REST API, using the format above we can format it as a human readable timespan
         - time: Returned from the REST API in UTC but we can convert it to local time
         - size: Returned in bytes from the REST API but we can convert it up into a human readable format as either base2 (1024), or base10 (1000)
+
+# Run your first extract to the PowerShell 7 console: report1.json
+- PS C:\Reports\customers\ezdata> start-extract -Console
+![StartExtractConsole](/Assets/start-extract-console.png)
+
+# Run your first extract and export to csv (in the reports directory): report1.json
+- PS C:\Reports\customers\ezdata> start-extract
+![StartExtractCsv](/Assets/start-extract-csv.png)
