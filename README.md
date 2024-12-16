@@ -171,4 +171,112 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 - In your debugging tools select the audit-logs node in the name column
 ![browser-debugging](/Assets/browser-debugging.png)
 - From the image above we can see that we the value of the apiEndpoint which in our case will be audit-logs
-- The apiVersion version will be 2
+- The apiVersion will be 2
+- We can leave the apiPaging set to random as that is the default paging method for the REST API
+- Lets change the fileName value to: dm-audit-logs.csv
+- Next lets add six some fields to our template which should now look like this...
+```
+{
+  "apiEndpoint": "audit-logs",
+  "apiPaging": "random",
+  "apiVersion": 2,
+  "fileName": "dm-audit-logs.csv",
+  "sortField": "sortField",
+  "sortOrder": "DESC",
+  "lookBack": 1,
+  "lookBackFormat": "yyyy-MM-ddThh:mm:ss.fffZ",
+  "filters": [
+    "sortField ge \"{{lookBack}}\""
+  ],
+  "fields": [
+    {
+      "label": "id",
+      "value": "id"
+    },
+    {
+      "label": "id",
+      "value": "id"
+    },
+    {
+      "label": "id",
+      "value": "id"
+    },
+    {
+      "label": "id",
+      "value": "id"
+    },
+    {
+      "label": "id",
+      "value": "id"
+    },
+    {
+      "label": "id",
+      "value": "id"
+    },
+    {
+      "label": "id",
+      "value": "id"
+    }
+  ]
+}
+```
+- Clicking over to the response tab in the browser debugging tools will let you see the fields so we can add some.
+- Now lets select a sortField from the list contained witin the contents array and set the value of sortField to changedTime
+- Now lets replace the sortField in the filters array to changedTime
+- Next lets defined the first field as changedTime for both label and value
+- Change the value for the next field to auditType for both label and value
+- Change the value for the next field to messageID for both label and value
+- Change the value for the next field to messageArgs for both label and value
+- Change the value for the next field to changeDescription for both label and value
+- Change the value for the next field to changedBy for the label changedBy.username for the value
+- Change the value for the next field to changedObject for the label and changedObject.resourceType
+- Save the template
+- Your template should now look like this...
+```
+{
+  "apiEndpoint": "audit-logs",
+  "apiPaging": "random",
+  "apiVersion": 2,
+  "fileName": "dm-audit-logs.csv",
+  "sortField": "changedTime",
+  "sortOrder": "DESC",
+  "lookBack": 1,
+  "lookBackFormat": "yyyy-MM-ddThh:mm:ss.fffZ",
+  "filters": [
+    "changedTime ge \"{{lookBack}}\""
+  ],
+  "fields": [
+    {
+      "label": "changedTime",
+      "value": "changedTime"
+    },
+    {
+      "label": "auditType",
+      "value": "auditType"
+    },
+    {
+      "label": "messageID",
+      "value": "messageID"
+    },
+    {
+      "label": "messageArgs",
+      "value": "messageArgs"
+    },
+    {
+      "label": "changeDescription",
+      "value": "changeDescription"
+    },
+    {
+      "label": "changedBy",
+      "value": "changedBy.username"
+    },
+    {
+      "label": "changedObject",
+      "value": "changedObject.resourceType"
+    }
+  ]
+}
+```
+- Rerun the start-extract cmdlet
+- PS C:\Reports\customers\ezdata> **start-extract**
+![start-extract-custom](/Assets/start-extract-custom.png)
