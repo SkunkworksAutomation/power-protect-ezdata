@@ -18,7 +18,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 
 # Notes
 > [!WARNING]
-> Some of these data extracts can potentially be very large. Ensure you are adjusting any parameters within reasonable ranges.
+> Some of these data extracts can potentially be very large. Ensure you are adjusting any parameters within reasonable ranges and using the correct paging methodology.
 
 # Getting started
 - Download the dm.utils.ezdata.psm1 module
