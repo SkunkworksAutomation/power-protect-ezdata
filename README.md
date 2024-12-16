@@ -109,7 +109,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 - **fields**: what fields you want on the report
     - **label**: What you want to call the field in the data extract.
     - **value**: The field name, returned by the REST API that you want the value for. This can be values for unnested, nested and array values. For nested properties simply use the dot path notation.
-    - Dot path example (we are grabbing the stats object and returning the value of its bytesTransferred property):
+    - Dot path example (*we are grabbing the stats object and returning the value of its bytesTransferred property*):
     ```
     {
         "label": "sizeTransferred",
@@ -117,7 +117,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
         "format": null
     }
     ```
-    - **format**: format handling for special fields (Duration, Time, Size)
-        - Duration: Returned in miliseconds from the REST API, using the format above we can format it as a human readable timespan
-        - Time: Returned from the REST API in UTC but we can convert it to local time
-        - Size: Returned in bytes from the REST API but we can convert it up into a human readable format as either base2 (1024), or base10 (1000)
+    - **format**: format handling for special fields
+        - duration: Returned in miliseconds from the REST API, using the format above we can format it as a human readable timespan
+        - time: Returned from the REST API in UTC but we can convert it to local time
+        - size: Returned in bytes from the REST API but we can convert it up into a human readable format as either base2 (1024), or base10 (1000)
