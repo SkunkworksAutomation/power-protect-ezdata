@@ -282,5 +282,5 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 - PS C:\Reports\customers\ezdata> **start-extract**
 ![start-extract-custom](/Assets/start-extract-custom.png)
 
-- Finally lets look at the csv contained 
+- Finally lets look at the csv contained within the reports directory
 ![custom-template-output](/Assets/custom-template-output.png)
