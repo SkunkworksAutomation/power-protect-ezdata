@@ -31,8 +31,11 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 
 ![NewConfiguration1](/Assets/new-configuration1.png)
 ![NewConfiguration2](/Assets/new-configuration2.png)
-
-- a default report template is created in the templates folder called report1.json
+# Folders
+- **configuration**: Where the default configuration and PS credential files reside
+- **reports**: Output in csv format from the data extract
+- **templates**: Where your extract templates are created and reside
+    - a default extract template is created here called report1.json
 
 # Default template: report1.json
 ```
