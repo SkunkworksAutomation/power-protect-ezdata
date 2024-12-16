@@ -135,3 +135,40 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 
 # Extract from template: report1.json
 ![report1-data-extract](/Assets/report1-data-extract.png)
+
+# Creating custom extracts / reports
+ - PS C:\Reports\customers\ezdata> **new-template**
+![custom-extract](/Assets/new-template.png)
+
+- Path into the templates directory
+- Right click and edit report2.json which will look like this
+```
+{
+  "apiEndpoint": "desiredEndpoint",
+  "apiPaging": "random",
+  "apiVersion": 2,
+  "fileName": "dm-template.csv",
+  "sortField": "sortField",
+  "sortOrder": "DESC",
+  "lookBack": 1,
+  "lookBackFormat": "yyyy-MM-ddThh:mm:ss.fffZ",
+  "filters": [
+    "sortField ge \"{{lookBack}}\""
+  ],
+  "fields": [
+    {
+      "label": "id",
+      "value": "id"
+    }
+  ]
+}
+```
+- Now lets say we want to create a report on the audit logs
+- We can get the values we need for the template right out of a session with PowerProtect Data Manager
+- Log into PowerProtect data manager and open your browser debugging tools (typically: f12)
+- Select the network tab in the debugging tools
+- In the powerProtect Data Manager UI select Administration -> Audit Logs
+- In your debugging tools select the audit-logs node in the name column
+![browser-debugging](/Assets/browser-debugging.png)
+- From the image above we can see that we the value of the apiEndpoint which in our case will be audit-logs
+- The apiVersion version will be 2
