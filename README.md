@@ -1,5 +1,5 @@
 # PowerProtect ezdata (v19.18)
-Create declarative data extracts for PowerProtect Data Manager. This PowerShell7 module will allow you to create data extracts for PowerProtect Data Manager without writing any code. It is very extensible for those with a PowerShell 7 skill set but it is definately not required to use only a very basic knowledge of PowerShell 7 is required (i.e executing cmdlets).
+Create declarative data extracts for PowerProtect Data Manager. This PowerShell7 module will allow you to create data extracts for PowerProtect Data Manager without writing any code. It is very extensible for those with a PowerShell 7 skill set but it is definately not required for standard usage.
 
 # Use case
 - Basic ad hoc reporting against a single rest api endpoint
