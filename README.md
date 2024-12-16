@@ -119,7 +119,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
     }
     ```
     - **format**: format handling for special fields
-        - duration: Returned in miliseconds from the REST API, using the format above we can format it as a human readable timespan
+        - duration: Returned in milliseconds from the REST API, using the format above we can format it as a human readable timespan
         - time: Returned from the REST API in UTC but we can convert it to local time
         - size: Returned in bytes from the REST API but we can convert it up into a human readable format as either base2 (1024), or base10 (1000)
 
