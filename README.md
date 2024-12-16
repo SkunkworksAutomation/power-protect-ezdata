@@ -3,7 +3,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 
 # Use case
 - Basic ad hoc reporting against a single rest api endpoint
-- Data extraction to csv (this can be used to ingest data into other platforms for robust reporting capabilities)
+- Data extraction to csv (*this can be used to ingest data into other platforms for robust reporting capabilities*)
 
 # Skills requirements
 - Knowledge of simple JSON structures
