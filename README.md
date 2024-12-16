@@ -161,7 +161,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
   ]
 }
 ```
-- Now lets say we want to create a report on the audit logs
+- Now lets say we want to create a data extract on the audit logs
 - We can get the values we need for the template right out of a session with PowerProtect Data Manager
 - Log into PowerProtect data manager and open your browser debugging tools (typically: f12)
 - Select the network tab in the debugging tools
