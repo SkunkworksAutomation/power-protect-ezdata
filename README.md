@@ -24,4 +24,5 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 - PS C:\Reports\customers\ezdata> Import-Module .\dm.utils.ezdata.psm1 -Force
 - PS C:\Reports\customers\ezdata> new-configuration
 - Follow the on screen prompts
-![NewConfiguration](/Assets/new-configuration.png)
+![NewConfiguration1](/Assets/new-configuration1.png)
+![NewConfiguration2](/Assets/new-configuration2.png)
