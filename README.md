@@ -93,7 +93,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 
 ```
 # Understanding template: report1.json
-- apiEndpoint: The REST API endpoint we want to extract data from
+- ** apiEndpoint ** : The REST API endpoint we want to extract data from
 - apiPaging: The paging methodology we want to use - random, or serial.
     - Random paging: is more performant but can only retrieve under 10,000 records
     - Serial paging: can return greater than 10,000 records
