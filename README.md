@@ -221,7 +221,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 }
 ```
 - Clicking over to the response tab in the browser debugging tools will let you see the fields so we can add some.
-
+![browser-debugging2](/Assets/browser-debugging2.png)
 - Now lets select a sortField from the list contained witin the contents array and set the value of sortField to changedTime
 - Now lets replace the sortField in the filters array to changedTime
 - Next lets defined the first field as changedTime for both label and value
