@@ -132,3 +132,6 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 # Run your first extract and export to csv (in the reports directory): report1.json
 - PS C:\Reports\customers\ezdata> **start-extract**
 ![StartExtractCsv](/Assets/start-extract-csv.png)
+
+# Extract from template: report1.json
+![report1-data-extract](/Assets/report1-data-extract.png)
