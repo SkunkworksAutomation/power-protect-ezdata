@@ -222,7 +222,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 ![browser-debugging2](/Assets/browser-debugging2.png)
 - Now lets select a sortField from the list contained witin the contents array and set the value of sortField to changedTime
 - Now lets replace the sortField in the filters array to changedTime
-- Next lets defined the first field as changedTime for both label and value
+- Next lets define the first field as changedTime for both label and value
 - Change the value for the next field to auditType for both label and value
 - Change the value for the next field to messageID for both label and value
 - Change the value for the next field to messageArgs for both label and value
