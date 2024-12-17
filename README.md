@@ -223,12 +223,12 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 - Now lets select a sortField from the list contained witin the contents array and set the value of sortField to changedTime
 - Now lets replace the sortField in the filters array to changedTime
 - Next lets define the first field as changedTime for both label and value
-- Change the value for the next field to auditType for both label and value
-- Change the value for the next field to messageID for both label and value
-- Change the value for the next field to messageArgs for both label and value
-- Change the value for the next field to changeDescription for both label and value
-- Change the value for the next field to changedBy for the label changedBy.username for the value
-- Change the value for the next field to changedObject for the label and changedObject.resourceType
+- Change both the label and value for the next field to auditType
+- Change both the label and value for the next field to messageID
+- Change both the label and value for the next field to messageArgs
+- Change both the label and value for the next field to changeDescription
+- Change the label for the next field to changedBy and the value to changedBy.username
+- Change the label for the next field to changedObject and the value to changedObject.resourceTypee
 - Save the template
 - Your template should now look like this...
 ```
