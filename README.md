@@ -106,7 +106,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 - **lookBackFormat**: UTC, you can use this to set a specified time "yyyy-MM-ddT18:00:00.000Z".
     - In the example above if we are querying the activities REST API based on the activity startTime. The time from the REST API is stored in UTC so based on the lookBack and lookBackFormat it would return every activity with a startTime greater than TODAY at midnight UTC if the offset was -6:00.
 - **filters**: Any critera we want to filter on. In the example above we are querying for activities with a startTime greater than or equal to {{lookBack}} with a category of PROTECT (backups), and a classType JOB_GROUP (protection policies)
-    - Note: {{lookBack}} is a data binding that is replaced the value of the lookBack property and converted into a datetime value (Todays date - lookBack).
+    - Note: {{lookBack}} is a data binding that is replaced with the value of the lookBack property and converted into a datetime value (Todays date - lookBack).
 - **fields**: what fields you want on the report
     - **label**: What you want to call the field in the data extract.
     - **value**: The field name, returned by the REST API that you want the value for. This can be values for unnested, nested and array values. For nested properties simply use the dot path notation.
