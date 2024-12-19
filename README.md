@@ -165,7 +165,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 - We can get the values we need for the template right out of a session with PowerProtect Data Manager
 - Log into PowerProtect data manager and open your browser debugging tools (typically: f12)
 - Select the network tab in the debugging tools
-- In the powerProtect Data Manager UI select Administration -> Audit Logs
+- In the PowerProtect Data Manager UI select Administration -> Audit Logs
 - In your debugging tools select the audit-logs node in the name column
 ![browser-debugging1](/Assets/browser-debugging1.png)
 - From the image above we can see that we the value of the apiEndpoint which in our case will be audit-logs
