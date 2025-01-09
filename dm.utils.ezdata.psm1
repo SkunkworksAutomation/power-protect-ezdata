@@ -428,7 +428,7 @@ foreach($Map in $Mappings) {
                     $fieldObj."$($Map.label)"="$($Map.format -f $timeSpan)"
                 }
             }
-            'Time$' {
+            'Time|atedAt' {
                 if($null -eq $Map.format) {
                     # UTC IS THE DEFAULT
                     $fieldObj."$($Map.label)"="$($Row.($Map.value))"
