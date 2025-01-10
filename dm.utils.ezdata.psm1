@@ -428,15 +428,19 @@ foreach($Map in $Mappings) {
                     $fieldObj."$($Map.label)"="$($Map.format -f $timeSpan)"
                 }
             }
-            'Time|atedAt' {
+            '(At|Discovered|Time|Updated)$' {
                 if($null -eq $Map.format) {
                     # UTC IS THE DEFAULT
                     $fieldObj."$($Map.label)"="$($Row.($Map.value))"
                 } else {
                     if($Map.format -eq "local") {
                         # LOCAL
-                        $Date = Get-Date("$($Row.($Map.value))")
-                        $fieldObj."$($Map.label)"="$($Date.ToLocalTime())"
+                        if($null -ne $Row.($Map.value)) {
+                            $Date = Get-Date("$($Row.($Map.value))")
+                            $fieldObj."$($Map.label)"="$($Date.ToLocalTime())"
+                        } else {
+                            $fieldObj."$($Map.label)"="$($Row.($Map.value))"
+                        }
                     } else {
                         # UTC IS THE DEFAULT
                         $fieldObj."$($Map.label)"="$($Row.($Map.value))"
