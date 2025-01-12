@@ -436,7 +436,7 @@ function new-reportobject {
             } # END IF
         } else {
             # FILTERED STRUCTURE
-            # CREATE A MAP LIST [ ARRAY|FILTER|FIELD(S) ]
+            # CREATE A MAP LIST [ ARRAY|FILTER|FIELD(S)|POSITION ]
             $mapList = $Map.value -split '\|'
 
             # PARSE OUT WHERE-OBJECT
