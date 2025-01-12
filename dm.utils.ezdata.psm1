@@ -317,217 +317,255 @@ function get-serial {
 }
 
 function Convert-BytesToSize {
-[CmdletBinding()]
-param
-(
-    [parameter(Mandatory=$false,Position=0)]
-    [int64]$Size,
-    [parameter(Mandatory=$false,Position=0)]
-    [int]$Base
-)
+    [CmdletBinding()]
+    param
+    (
+        [parameter(Mandatory=$false,Position=0)]
+        [int64]$Size,
+        [parameter(Mandatory=$false,Position=0)]
+        [int]$Base
+    )
 
-# DETERMINE SIZE IN BASE2
-switch ($Size)
-{
-    {$Size -gt 1PB}
+    # DETERMINE SIZE IN BASE2
+    switch ($Size)
     {
-        if($Base -eq 2) {
-            $newSize = @{size=$([math]::Round(($Size /1PB),1));uom="PiB"}
-        } else {
-            $newSize = @{size=$([math]::Round(($Size /1000000000000000),1));uom="PB"}
-        }
-       
-        Break;
-    }
-    {$Size -gt 1TB}
-    {
-         if($Base -eq 2) {
-            $newSize = @{size=$([math]::Round(($Size /1TB),1));uom="TiB"}
-         } else {
-            $newSize = @{size=$([math]::Round(($Size /1000000000000),1));uom="TB"}
-         }
-        Break;
-    }
-    {$Size -gt 1GB}
-    {
-         if($Base -eq 2) {
-            $newSize = @{size=$([math]::Round(($Size /1GB),1));uom="GiB"}
-         } else {
-            $newSize = @{size=$([math]::Round(($Size /1000000000),1));uom="GB"}
-         }
-        Break;
-    }
-    {$Size -gt 1MB}
-    {
-         if($Base -eq 2) {
-            $newSize = @{size=$([math]::Round(($Size /1MB),1));uom="MiB"}
-         } else {
-            $newSize = @{size=$([math]::Round(($Size /1000000),1));uom="MB"}
-         }
+        {$Size -gt 1PB}
+        {
+            if($Base -eq 2) {
+                $newSize = @{size=$([math]::Round(($Size /1PB),1));uom="PiB"}
+            } else {
+                $newSize = @{size=$([math]::Round(($Size /1000000000000000),1));uom="PB"}
+            }
         
-        Break;
-    }
-    {$Size -gt 1KB}
-    {
-        if($Base -eq 2) {
-            $newSize = @{size=$([math]::Round(($Size /1KB),1));uom="KiB"}
-         } else {
-            $newSize = @{size=$([math]::Round(($Size /1000),1));uom="KB"}
-         }
-        Break;
-    }
-    Default
-    {
-        $newSize = @{size=$([math]::Round($Size,2));uom="Bytes"}
-        Break;
-    }
-}
-    return $NewSize
-
-}
-
-function new-reportobject {
-[CmdletBinding()]
-param (
-    [Parameter(Mandatory=$true)]
-    [object]$Row,
-    [Parameter(Mandatory=$true)]
-    [array]$Mappings,
-    [switch]$DebugMode
-)
-begin {}
-process {       
-$RowObject = @()
-$fieldObj = [ordered]@{}
-foreach($Map in $Mappings) {
-    $x=0
-    $fieldRef = $null
-    $fieldVal = $null
-
-    if($DebugMode){
-        Write-Host "`n[WORKING ON]:: Label: $($Map.label) :: Value: $($Map.value)`n" -ForegroundColor White
-    }
-
-    if($Map.value -notmatch '\.') {
-        # OUT PUT FOR DEBGGING
-        if($DebugMode){
-            Write-Host "[NOT MATCHED]: Value: $( $Row.($Map.value) )" -ForegroundColor Yellow
+            Break;
         }
+        {$Size -gt 1TB}
+        {
+            if($Base -eq 2) {
+                $newSize = @{size=$([math]::Round(($Size /1TB),1));uom="TiB"}
+            } else {
+                $newSize = @{size=$([math]::Round(($Size /1000000000000),1));uom="TB"}
+            }
+            Break;
+        }
+        {$Size -gt 1GB}
+        {
+            if($Base -eq 2) {
+                $newSize = @{size=$([math]::Round(($Size /1GB),1));uom="GiB"}
+            } else {
+                $newSize = @{size=$([math]::Round(($Size /1000000000),1));uom="GB"}
+            }
+            Break;
+        }
+        {$Size -gt 1MB}
+        {
+            if($Base -eq 2) {
+                $newSize = @{size=$([math]::Round(($Size /1MB),1));uom="MiB"}
+            } else {
+                $newSize = @{size=$([math]::Round(($Size /1000000),1));uom="MB"}
+            }
+            
+            Break;
+        }
+        {$Size -gt 1KB}
+        {
+            if($Base -eq 2) {
+                $newSize = @{size=$([math]::Round(($Size /1KB),1));uom="KiB"}
+            } else {
+                $newSize = @{size=$([math]::Round(($Size /1000),1));uom="KB"}
+            }
+            Break;
+        }
+        Default
+        {
+            $newSize = @{size=$([math]::Round($Size,2));uom="Bytes"}
+            Break;
+        }
+    }
+        return $NewSize
+
+}
+function new-reportobject {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory=$true)]
+        [object]$Row,
+        [Parameter(Mandatory=$true)]
+        [array]$Mappings,
+        [switch]$DebugMode
+    )
+    begin {}
+    process {
+    $fieldObj = [ordered]@{}       
+
+    foreach($Map in $Mappings) {
+        # IS IT A NESTED STRUCTURE
+        $nested = $Map.value -match '\.'
+        # IS IT A FILTERED STRUCTURE
+        $filtered = $Map.value -match '\|'
+        $unformatted = $null
+        # UNFILTERED
+        if(!$filtered) {
+            # NESTED STRUCTURE
+            if($nested) {
+                $oPath = $Map.value -split '\.'
+                [array]$nValue = $Row
+                $oPath | ForEach-Object {
+                    $nValue =  $nValue.$_
+                }
+                try {
+                    $unformatted = $nValue
+                }
+                catch{
+                    if($DebugMode) {
+                        Write-Host "[ERROR]: line 469`n$($nValue)" -ForegroundColor Red
+                    }
+                }
+                
+            } else {
+                # FLAT STRUCTURE
+                try {
+                    $unformatted = $Row.($Map.value)
+                }
+                catch{
+                    if($DebugMode) {
+                        Write-Host "[ERROR]: line 480`n$($Row.($Map.value))" -ForegroundColor Red
+                    }
+                }
+                
+            } # END IF
+        } else {
+            # FILTERED STRUCTURE
+            # CREATE A MAP LIST [ ARRAY|FILTER|FIELD(S) ]
+            $mapList = $Map.value -split '\|'
+
+            # PARSE OUT WHERE-OBJECT
+            $where = $mapList[1] -split '\s'
+
+            # FILTER THE OBJECT
+            # TO DO: ADD SUPPORT FOR ADDITITONAL OPERATORS
+            $filter = $Row."$($mapList[0])" | `
+            where-object {$_."$($where[0])" -eq "$($where[2])"}
+                     
+            if($mapList[-2] -match "\.") {
+                 # FILTERED AND NESTED
+                 # ARRAY PATH
+                 $oPath = $mapList[-2] -split '\.'
+
+                 [array]$nValue = $filter
+                 $oPath | ForEach-Object {
+                     $nValue =  $nValue.$_
+                 }
+            
+                 if($nValue.length -gt 0) {
+                    try {
+                        $unformatted = $nValue[$mapList[-1]]
+                    }
+                    catch {
+                        if($DebugMode) {
+                            Write-Host "[ERROR]: line 514`n$($_.Message)" -ForegroundColor Red
+                        }
+                    }
+                    
+                 } else {
+                    try {
+                        $unformatted = $nValue
+                    }
+                    catch {
+                        if($DebugMode) {
+                            Write-Host "[ERROR]: line 524`n$($_.Message)" -ForegroundColor Red
+                        }
+                    }
+                    
+                 }
+            } else {
+                $unformatted = $filter."$($nValue)"
+
+            } # END IF
+            } # END IF
         # SPECIAL FIELD HANDLING
+        $formatted = $null
         switch -Regex ($Map.value) {
+            '[b|B]ytes' {
+                # FORMAT THE SIZE
+                if($null -eq $Map.format) {
+                    $formatted = $unformatted
+                } else {
+                    $filtered = $unformatted | Where-Object { $_ }
+                    if($filtered) {
+                        # FORMAT THE NUMBER
+                        $base = $Map.format -replace "[a-zA-Z]", ""
+                        $size = Convert-BytesToSize -Size $filtered -Base $base
+                        $formatted = "$($size.size) $($size.uom)"
+                    } else {
+                        $formatted = $unformatted
+                    }
+                  
+                }
+            }
             '^duration$' {
                 # FORMAT THE DURATION
-                if($null -eq $Row.($Map.value)) {
+                if($null -eq $unformatted ) {
                     $timeSpan = 0
                 } else {
-                    $timeSpan = New-TimeSpan -Milliseconds $Row.($Map.value)
+                    $timeSpan = New-TimeSpan -Milliseconds $unformatted
                 }
                 if($null -eq $Map.format) {
-                    $fieldObj."$($Map.label)"="$($Row.($Map.value))"
+                    $formatted = $unformatted
                 } else {
-                    $fieldObj."$($Map.label)"="$($Map.format -f $timeSpan)"
+                    $formatted = "$($Map.format -f $timeSpan)"
                 }
+                break;
             }
             '(At|Discovered|Time|Updated)$' {
                 if($null -eq $Map.format) {
                     # UTC IS THE DEFAULT
-                    $fieldObj."$($Map.label)"="$($Row.($Map.value))"
+                    $formatted = $unformatted
                 } else {
                     if($Map.format -eq "local") {
                         # LOCAL
-                        if($null -ne $Row.($Map.value)) {
-                            $Date = Get-Date("$($Row.($Map.value))")
-                            $fieldObj."$($Map.label)"="$($Date.ToLocalTime())"
+                        if($null -ne $unformatted) {
+                            $Date = Get-Date("$($unformatted)")
+                            $formatted = "$($Date.ToLocalTime())"
                         } else {
-                            $fieldObj."$($Map.label)"="$($Row.($Map.value))"
+                            $formatted = $unformatted
                         }
                     } else {
                         # UTC IS THE DEFAULT
-                        $fieldObj."$($Map.label)"="$($Row.($Map.value))"
+                        $formatted = $unformatted
                     }
                 }
+                break;
             }
             default {
-                $fieldObj."$($Map.label)"="$($Row.($Map.value))"
+                $formatted = $unformatted
                 break;
             }
         } # END SWITCH
-        
-    } else {
-        foreach ($item in $Map.value -split '\.') {
-            if($x -eq 0) {
-                # FIRST ITERATION
-                $i = $Map.value -split '\.'
-                $fieldRef = $Row.$item.PSObject.Properties.value
-                $fieldVal = $fieldRef.$($Map.value -split '\.' | select-object -last 1)
-
-                if($fieldVal) {
-                    # OUT PUT FOR DEBGGING
-                    if($DebugMode){
-                        Write-Host "==>[$($x) of $($i.length-1)]: fieldVal: $($fieldVal)" -ForegroundColor Blue
-                    }
-                    # CREATE A COLUMN FOR THE VALUE
-                    $fieldObj."$($Map.label)"="$($fieldVal)"
-                } else {
-                    # OUT PUT FOR DEBGGING
-                    if($DebugMode){
-                        Write-Host "==>[$($x) of $($i.length-1)]: fieldRef: $($fieldRef)" -ForegroundColor Green
-                    }
-                    # QUERY FOR THE TARGET PROPERTY
-                    $Temp = ($Row.$item.PSObject.Properties | Where-Object{$_.name -eq $i[-1]}).value
-                        
-                    # SPECIAL FIELD HANDLING
-                    switch -Regex ($Map.value) {
-                        '[b|B]ytes' {
-                            # FORMAT THE SIZE
-                            $base = $Map.format -replace "[a-zA-Z]", ""
-                            $size = Convert-BytesToSize -Size $Temp -Base $base
-                            if($null -eq $Map.format) {
-                                $fieldObj."$($Map.label)"="$($Temp)"
-                            } else {
-                                $fieldObj."$($Map.label)"="$($size.size) $($size.uom)"
-                            }
-                        }
-                        default {
-                            # CREATE A COLUMN FOR THE VALUE
-                            $fieldObj."$($Map.label)"="$($Temp)"
-                            break;
-                        }
-                    } # END SWITCH
-                }
-            } else {
-                if($DebugMode){
-                    Write-Host "==>[$($x) of $($i.length-1)]: $($Row.$item.PSObject.Properties.value)" -ForegroundColor Cyan
-                }
-            }
-            # ADVANCE THE ITERATOR
-            $x++
-        } # END FOREACH
-    }
-} # END MAPPING
-    $RowObject = (New-Object -TypeName psobject -Property $fieldObj)
-    return $RowObject
-} # END PROCESS
+            $fieldObj."$($Map.label)"="$( $formatted )"  
+    } # END MAPPINGS
+        return (New-Object -TypeName psobject -Property $fieldObj)
+    } # END PROCESS
 } # END FUNCTION
 
 function disconnect-dmapi {
 [CmdletBinding()]
-param (
-    [Parameter(Mandatory=$true)]
-    [int]$Version
-)
-begin {}
-process {
-    # LOGOFF OF THE POWERPROTECT API
-    Invoke-RestMethod -Uri "$($dmAuthObject.server)/v$($Version)/logout" `
-    -Method POST `
-    -ContentType 'application/json' `
-    -Headers ($dmAuthObject.token) `
-    -SkipCertificateCheck
-    
-    Write-Host "[DISCONNECTED]: $($dmAuthObject.server)" -ForegroundColor Yellow
-    $global:dmAuthObject = $null
-} # END PROCESS
+    param (
+        [Parameter(Mandatory=$true)]
+        [int]$Version
+    )
+    begin {}
+    process {
+        # LOGOFF OF THE POWERPROTECT API
+        Invoke-RestMethod -Uri "$($dmAuthObject.server)/v$($Version)/logout" `
+        -Method POST `
+        -ContentType 'application/json' `
+        -Headers ($dmAuthObject.token) `
+        -SkipCertificateCheck
+        
+        Write-Host "[DISCONNECTED]: $($dmAuthObject.server)" -ForegroundColor Yellow
+        $global:dmAuthObject = $null
+    } # END PROCESS
 } # END FUNCTION
 
 function start-extract {
@@ -616,7 +654,8 @@ function start-extract {
                 foreach($Row in $Query) {
                     $Report += new-reportobject `
                     -Row $Row `
-                    -Mappings $Template.fields
+                    -Mappings $Template.fields `
+                    -DebugMode
                 }
                 if($Console) {
                     $Report | Format-Table -AutoSize
