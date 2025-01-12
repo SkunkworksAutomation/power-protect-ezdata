@@ -418,7 +418,7 @@ function new-reportobject {
                 }
                 catch{
                     if($DebugMode) {
-                        Write-Host "[ERROR]: line 469`n$($nValue)" -ForegroundColor Red
+                        Write-Host "[ERROR]: Just above line 421`n$($nValue)" -ForegroundColor Red
                     }
                 }
                 
@@ -429,7 +429,7 @@ function new-reportobject {
                 }
                 catch{
                     if($DebugMode) {
-                        Write-Host "[ERROR]: line 480`n$($Row.($Map.value))" -ForegroundColor Red
+                        Write-Host "[ERROR]: Just above line 432`n$($Row.($Map.value))" -ForegroundColor Red
                     }
                 }
                 
@@ -463,7 +463,7 @@ function new-reportobject {
                     }
                     catch {
                         if($DebugMode) {
-                            Write-Host "[ERROR]: line 514`n$($_.Message)" -ForegroundColor Red
+                            Write-Host "[ERROR]: Just above line 466`n$($_.Message)" -ForegroundColor Red
                         }
                     }
                     
@@ -473,7 +473,7 @@ function new-reportobject {
                     }
                     catch {
                         if($DebugMode) {
-                            Write-Host "[ERROR]: line 524`n$($_.Message)" -ForegroundColor Red
+                            Write-Host "[ERROR]: Just above line 476`n$($_.Message)" -ForegroundColor Red
                         }
                     }
                     
