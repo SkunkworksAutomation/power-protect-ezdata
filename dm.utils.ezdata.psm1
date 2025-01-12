@@ -500,8 +500,8 @@ function new-reportobject {
                     } else {
                         $formatted = $unformatted
                     }
-                  
                 }
+                break;
             }
             '^duration$' {
                 # FORMAT THE DURATION
