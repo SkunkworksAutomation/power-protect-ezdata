@@ -305,7 +305,7 @@ In order to access the name property within the nested JSON object above the fie
   "value": "node1.node2.name"
 }
 ```
-Lets take look at a more complicated structure
+Now lets take look at a more complicated structure
 ```
 {
     "parts": [
