@@ -367,3 +367,5 @@ Both of these approaches will work. Please note that if the REST API return node
 - ? followed by a number return the elements position in a zero based array **catalog|?1|name**
 - ? followed by a property then followed by eq, ne, match then followed by a value will query the array based a properties value **catalog|?name eq Part2|name**
 - Property and Positional queries can be mixed together  **catalog|?name eq Part2|colors|?1|color**
+
+![custom-template-output](/Assets/test-extract.png)
