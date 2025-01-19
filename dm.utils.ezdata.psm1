@@ -709,4 +709,25 @@ function start-extract {
     } # END SERVERS
 } # END PROCESS
 } # END FUNCTION
+function test-extract {
+    [CmdletBinding()]
+    param (
+    [Parameter(Mandatory=$true)]
+    [int]$ConfigNo
+    )
+    begin {}
+    process {
+        $Data = Get-Content ".\Dummy.json" | `
+        ConvertFrom-Json -Depth 10
+        $Template = Get-Content ".\templates\report$($ConfigNo).json" | `
+        ConvertFrom-Json -Depth 10
+        $Report = @()
+        $Data | foreach-object {
+            $Report += new-query `
+            -Data $Data `
+            -Fields $Template.fields
+        }
+        $Report | format-Table -AutoSize
+    }
+}
 Export-ModuleMember -Function *
