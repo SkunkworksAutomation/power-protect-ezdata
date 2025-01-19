@@ -385,165 +385,191 @@ function Convert-BytesToSize {
         return $NewSize
 
 }
-function new-reportobject {
+
+function new-query {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory=$true)]
-        [object]$Row,
+        [object]$Data,
         [Parameter(Mandatory=$true)]
-        [array]$Mappings,
-        [switch]$DebugMode
+        [array]$Fields
     )
-    begin {}
+    begin {
+        $fieldObj = [ordered]@{}
+        $fieldValue = $null
+    } # END BEGIN
     process {
-    $fieldObj = [ordered]@{}       
+        foreach($Field in $Fields) {            
+            # CHECK FOR FILTERING
+            $Filtered = $Field.value -match '\|'
+        
+            # NOT FILTERED
+            if(!$Filtered) {
+                # CHECK FOR NESTING
+                if($Field.value -match '\.') {
+                    # TRAVERSE THE DATA PATH
+                    $fieldValue = $Data
+                    $fieldPath = $Field.value -split '\.'
+                    $fieldPath  | ForEach-Object {
+                        $fieldValue = $fieldValue.$_
+                    } 
+                } else {
+                    # NOT NESTED
+                    $fieldValue = $Data."$($Field.value)"
+                }
 
-    foreach($Map in $Mappings) {
-        # IS IT A NESTED STRUCTURE
-        $nested = $Map.value -match '\.'
-        # IS IT A FILTERED STRUCTURE
-        $filtered = $Map.value -match '\|'
-        $unformatted = $null
-        # UNFILTERED
-        if(!$filtered) {
-            # NESTED STRUCTURE
-            if($nested) {
-                $oPath = $Map.value -split '\.'
-                [array]$nValue = $Row
-                $oPath | ForEach-Object {
-                    $nValue =  $nValue.$_
-                }
-                try {
-                    $unformatted = $nValue
-                }
-                catch{
-                    if($DebugMode) {
-                        Write-Host "[ERROR]: Just above line 421`n$($nValue)" -ForegroundColor Red
-                    }
-                }
-                
             } else {
-                # FLAT STRUCTURE
-                try {
-                    $unformatted = $Row.($Map.value)
-                }
-                catch{
-                    if($DebugMode) {
-                        Write-Host "[ERROR]: Just above line 432`n$($Row.($Map.value))" -ForegroundColor Red
-                    }
-                }
+                # CREATE THE FILTERS
+                $Filters = $field.value -split '\|'
+                # ITERATE OVER THE FILTERS
+                for($i=0;$i -lt $filters.length;$i++) {
+                    switch -Regex ($filters[$i]) {
+                        '^\?[aA-zZ]' {
+                            # RETURN DATA IN THE ARRAY BASED ON A QUERY
+                            # STRIP OUT THE QUESTION MARK
+                            [array]$vValue = ($filters[$i] -replace '\?','') -split '\s'
+                            break;
+                        }
+                        '^\?[0-9]' {
+                            # RETURN DATA IN THE ARRAY BASED ON A QUERY
+                            [int]$vValue = ($filters[$i] -replace '\?','')
+                            break;
+                        }
+                        default {
+                            [string]$vValue = $filters[$i]
+                            break;
+                        }
+                    } # END SWITCH
+
+                    # CREATE THE DYNAMIC VARIABLE FOR THE QUERY
+                    $vName = "filteredQuery$($i)"
+                    Set-Variable -Name $vName -Value $vValue
+                } # END FOR
                 
-            } # END IF
-        } else {
-            # FILTERED STRUCTURE
-            # CREATE A MAP LIST [ ARRAY|FILTER|FIELD(S)|POSITION ]
-            $mapList = $Map.value -split '\|'
+                # GET A LIST OF THE QUERY VARIABLES
+                $Queries = Get-Variable | Where-Object {$_.Name -Match "filteredQuery"}
 
-            # PARSE OUT WHERE-OBJECT
-            $where = $mapList[1] -split '\s'
-
-            # FILTER THE OBJECT
-            # TO DO: ADD SUPPORT FOR ADDITITONAL OPERATORS
-            $filter = $Row."$($mapList[0])" | `
-            where-object {$_."$($where[0])" -eq "$($where[2])"}
-                     
-            if($mapList[-2] -match "\.") {
-                 # FILTERED AND NESTED
-                 # ARRAY PATH
-                 $oPath = $mapList[-2] -split '\.'
-
-                 [array]$nValue = $filter
-                 $oPath | ForEach-Object {
-                     $nValue =  $nValue.$_
-                 }
+                # ASSIGN THE ROOT DATA SET TO THE $fieldValue
+                # WE WILL ALWAYS START QUERIES FOR EACH FIELD FROM THE ROOT
+                $fieldValue = $Data
+                foreach($Query in $Queries) {
+                    # GET THE NAME OF THE BASETYPE
+                    # Array FOR FILTERS USED IN WHERE-OBJECT
+                    # ValueType FOR INTS USED IN A POSITIONAL QUERY OF AN ARRAY
+                    # Object (default) USED TO QUERY FOR ROOT AND NESTED PROPERTIES
+                    $Type = ($Query.Value).GetType().BaseType.Name
+                    switch($Type) {
+                        'Array' {
+                            # ARRAY - QUERY THE ARRAY BASED ON A VALUES
+                            switch($Query.Value[1]) {
+                                'eq' {
+                                    # EQUALS
+                                    $fieldValue = $fieldValue | `
+                                    Where-Object {$_."$($Query.Value[0])" -eq "$($Query.Value[2])"}
+                                    break;
+                                }
+                                'ne' {
+                                    # NOT EQUALS
+                                    $fieldValue = $fieldValue | `
+                                    Where-Object {$_."$($Query.Value[0])" -ne "$($Query.Value[2])"}
+                                    break;
+                                }
+                                'match' {
+                                    # MATCH USED TO PASS IN REGEX
+                                    $fieldValue = $fieldValue | `
+                                    Where-Object {$_."$($Query.Value[0])" -match "$($Query.Value[2])"}
+                                    break;
+                                }
+                            }               
+                            break;
+                        }
+                        'ValueType' {
+                            # INT - POSITIONAL ARRAY SEARCH
+                            if($null -ne $fieldValue) {
+                                $fieldValue = $fieldValue[$Query.Value]
+                            } else {
+                                $fieldValue = $fieldValue
+                            }
+                        }
+                        default {
+                            # OBJECT - SINGLE, OR NESTED
+                            if($Query.Value -match '\.') {
+                                ($Query.Value -split '\.') | ForEach-Object {
+                                    $fieldValue = $fieldValue.$_
+                                }
+                            } else {
+                                $fieldValue = ($fieldValue)."$($Query.Value)"
+                            }
+                            break;
+                        }
+                    }
+                 } # END SWITCH
+            } # END IF - FILTERED
             
-                 if($nValue.length -gt 0) {
-                    try {
-                        $unformatted = $nValue[$mapList[-1]]
-                    }
-                    catch {
-                        if($DebugMode) {
-                            Write-Host "[ERROR]: Just above line 466`n$($_.Message)" -ForegroundColor Red
-                        }
-                    }
-                    
-                 } else {
-                    try {
-                        $unformatted = $nValue
-                    }
-                    catch {
-                        if($DebugMode) {
-                            Write-Host "[ERROR]: Just above line 476`n$($_.Message)" -ForegroundColor Red
-                        }
-                    }
-                    
-                 }
-            } else {
-                $unformatted = $filter."$($nValue)"
-
-            } # END IF
-            } # END IF
-        # SPECIAL FIELD HANDLING
-        $formatted = $null
-        switch -Regex ($Map.value) {
+            # SPECIAL FIELD HANDLING
+            $formatted = $null
+            switch -Regex ($Field.value) {
             '[b|B]ytes' {
                 # FORMAT THE SIZE
-                if($null -eq $Map.format) {
-                    $formatted = $unformatted
+                if($null -eq $Field.format) {
+                    $formatted = $fieldValue
                 } else {
-                    $filtered = $unformatted | Where-Object { $_ }
+                    $filtered = $fieldValue | Where-Object { $_ }
                     if($filtered) {
                         # FORMAT THE NUMBER
-                        $base = $Map.format -replace "[a-zA-Z]", ""
+                        $base = $Field.format -replace "[a-zA-Z]", ""
                         $size = Convert-BytesToSize -Size $filtered -Base $base
                         $formatted = "$($size.size) $($size.uom)"
                     } else {
-                        $formatted = $unformatted
+                        $formatted = $fieldValue
                     }
                 }
                 break;
             }
             '^duration$' {
                 # FORMAT THE DURATION
-                if($null -eq $unformatted ) {
+                if($null -eq $fieldValue ) {
                     $timeSpan = 0
                 } else {
-                    $timeSpan = New-TimeSpan -Milliseconds $unformatted
+                    $timeSpan = New-TimeSpan -Milliseconds $fieldValue
                 }
-                if($null -eq $Map.format) {
-                    $formatted = $unformatted
+                if($null -eq $Field.format) {
+                    $formatted = $fieldValue
                 } else {
-                    $formatted = "$($Map.format -f $timeSpan)"
+                    $formatted = "$($Field.format -f $timeSpan)"
                 }
                 break;
             }
             '(At|Discovered|Time|Updated)$' {
-                if($null -eq $Map.format) {
+                if($null -eq $Field.format) {
                     # UTC IS THE DEFAULT
-                    $formatted = $unformatted
+                    $formatted = $fieldValue
                 } else {
-                    if($Map.format -eq "local") {
+                    if($Field.format -eq "local") {
                         # LOCAL
-                        if($null -ne $unformatted) {
-                            $Date = Get-Date("$($unformatted)")
+                        if($null -ne $fieldValue) {
+                            $Date = Get-Date("$($fieldValue)")
                             $formatted = "$($Date.ToLocalTime())"
                         } else {
-                            $formatted = $unformatted
+                            $formatted = $fieldValue
                         }
                     } else {
                         # UTC IS THE DEFAULT
-                        $formatted = $unformatted
+                        $formatted = $fieldValue
                     }
                 }
                 break;
             }
             default {
-                $formatted = $unformatted
+                $formatted = $fieldValue
                 break;
             }
         } # END SWITCH
-            $fieldObj."$($Map.label)"="$( $formatted )"  
-    } # END MAPPINGS
+
+            # ADD A COLUMN AND VALUE
+            $fieldObj.Add("$($Field.label)","$($formatted)")
+        }  # END FOREACH
+        # RETURN THE ROW
         return (New-Object -TypeName psobject -Property $fieldObj)
     } # END PROCESS
 } # END FUNCTION
@@ -652,10 +678,9 @@ function start-extract {
                 $Report = @()
                 Write-Host "`n[Generating]: Report... $($Template.fileName)" -ForegroundColor Yellow
                 foreach($Row in $Query) {
-                    $Report += new-reportobject `
-                    -Row $Row `
-                    -Mappings $Template.fields `
-                    -DebugMode
+                    $Report += new-query `
+                    -Data $Row `
+                    -Fields $Template.fields
                 }
                 if($Console) {
                     $Report | Format-Table -AutoSize
