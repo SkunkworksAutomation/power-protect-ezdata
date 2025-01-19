@@ -282,3 +282,93 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 
 - Finally lets look at the **dm-audit-logs.csv** file contained within the reports directory
 ![custom-template-output](/Assets/custom-template-output.png)
+
+# Working with complex data structures
+When working with nested data contained within JSON objects you can simply follow the dot (.) path from the root to the desired property.
+
+Example:
+```
+{
+  "node1":{
+    "node2": {
+      "id": 123456
+      "name": "Test"
+    }
+  }
+}
+```
+In order to access the name property within the nested JSON object above the field configuration in your report.json template would look like this
+
+```
+{
+  "label": "name",
+  "value": "node1.node2.name"
+}
+```
+Lets take look at a more complicated structure
+```
+{
+    "parts": [
+        {
+            "id": 1,
+            "name": "Part1",
+            "colors": [
+                {
+                    "id": 1,
+                    "color":"green"
+                },
+                {
+                    "id": 2,
+                    "color":"yellow"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "Part2",
+            "colors": [
+                {
+                    "id": 3,
+                    "color":"red"
+                },
+                {
+                    "id": 4,
+                    "color":"blue"
+                }
+            ]
+        }
+    ]
+}
+```
+For this example we want to we want to get to the color blue so our field configuration within the report.json file would look like this.
+```
+{
+  "label": "name",
+  "value": "parts|?id eq 2|name"
+},
+{
+    "label": "defaultColor",
+    "value": "parts|?id eq 2|colors|?id eq 4|color"
+}
+```
+## -- OR --
+```
+{
+  "label": "name",
+  "value": "parts|?name eq Part2|name"
+},
+{
+  "label": "defaultColor",
+  "value": "parts|?name eq Part2|colors|?1|color"
+}
+```
+
+Both of these approaches will work. Please note that if the REST API return nodes within an array in a random order the firt approach will net consistent results.
+
+- Filters are seperated by the pipe character |
+- Items specified within a filter can be nested, or unnested
+- Queries begin with a ?
+- Queries apply to array preceeding it in the pipeline **Array|PROPERTY OR POSITIONAL QUERY|value**
+- ? followed by a number return the elements position in a zero based array **parts|?0**
+- ? followed by a property then followed by eq, ne, match then followed by a value will query the array based a properties value **parts|?name eq Part2|name**
+- The approaches for queries can be mixed together (Property and Positional) **parts|?name eq Part2|colors|?1|color**
