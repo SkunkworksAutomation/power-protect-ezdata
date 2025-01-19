@@ -371,4 +371,4 @@ Both of these approaches will work. Please note that if the REST API return node
 - Queries apply to array preceeding it in the pipeline **Array|PROPERTY OR POSITIONAL QUERY|value**
 - ? followed by a number return the elements position in a zero based array **parts|?0**
 - ? followed by a property then followed by eq, ne, match then followed by a value will query the array based a properties value **parts|?name eq Part2|name**
-- The approaches for queries can be mixed together (Property and Positional) **parts|?name eq Part2|colors|?1|color**
+- Property and Positional queries can be mixed together  **parts|?name eq Part2|colors|?1|color**
