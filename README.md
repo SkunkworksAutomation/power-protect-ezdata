@@ -308,38 +308,39 @@ In order to access the name property within the nested JSON object above the fie
 Now lets take look at a more complicated structure
 ```
 {
-    "name": "TestCatalog",
-    "catalog":
-    [
-        {
-            "id": 1,
-            "name": "Part1",
-            "colors": [
-                {
-                    "id": 1,
-                    "color":"green"
-                },
-                {
-                    "id": 2,
-                    "color":"yellow"
-                }
-            ]
-        },
-        {
-            "id": 2,
-            "name": "Part2",
-            "colors": [
-                {
-                    "id": 3,
-                    "color":"red"
-                },
-                {
-                    "id": 4,
-                    "color":"blue"
-                }
-            ]
-        }
-    ]
+  "id": "b6c6e0b6-7358-448c-ae1d-2fe324768219",
+  "name": "TestCatalog",
+  "catalog":
+  [
+      {
+          "id": 1,
+          "name": "Part1",
+          "colors": [
+              {
+                  "id": 1,
+                  "color":"green"
+              },
+              {
+                  "id": 2,
+                  "color":"yellow"
+              }
+          ]
+      },
+      {
+          "id": 2,
+          "name": "Part2",
+          "colors": [
+              {
+                  "id": 3,
+                  "color":"red"
+              },
+              {
+                  "id": 4,
+                  "color":"blue"
+              }
+          ]
+      }
+  ]
 }
 ```
 For this example we want to we want to get to the color blue so our field configuration within the report.json file would look like this.
