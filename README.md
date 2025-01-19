@@ -343,7 +343,7 @@ Now lets take look at a more complicated structure
   ]
 }
 ```
-For this example we want to we want to get to the color blue so our field configuration within the report.json file would look like this.
+For this example we want to we want to get to the Part2 color blue so our field configuration within the report.json file would look like this.
 ```
 {
     "label": "defaultPartColor",
