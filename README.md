@@ -368,8 +368,8 @@ Both of these approaches will work. Please note that if the REST API return node
 - ? followed by a property then followed by **eq**, **ne**, or **match** then followed by a value will query the array based a properties value **catalog|?name eq Part2|name**
 - Property and Positional queries can be mixed together  **catalog|?name eq Part2|colors|?1|color**
 - Property based queries can currently use the following comparision operators:
-- - eq (equals)
-- - ne (not equals)
-- - match (regex)
+  - eq (equals)
+  - ne (not equals)
+  - match (regex)
 
 ![custom-template-output](/Assets/test-extract.png)
