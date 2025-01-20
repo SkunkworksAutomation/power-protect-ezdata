@@ -365,7 +365,11 @@ Both of these approaches will work. Please note that if the REST API return node
 - Queries begin with a ?
 - Queries apply to array preceeding it in the pipeline **Array|PROPERTY OR POSITIONAL QUERY|value**
 - ? followed by a number return the elements position in a zero based array **catalog|?1|name**
-- ? followed by a property then followed by eq, ne, match then followed by a value will query the array based a properties value **catalog|?name eq Part2|name**
+- ? followed by a property then followed by **eq**, **ne**, or **match** then followed by a value will query the array based a properties value **catalog|?name eq Part2|name**
 - Property and Positional queries can be mixed together  **catalog|?name eq Part2|colors|?1|color**
+- Property based queries can currently use the following comparision operators:
+- - eq (equals)
+- - ne (not equals)
+- - match (regex)
 
 ![custom-template-output](/Assets/test-extract.png)
