@@ -349,6 +349,7 @@ For this example we want to we want to get to the Part2 color blue so our field 
     "label": "defaultPartColor",
     "value": "catalog|?name eq Part2|colors|?id eq 4|color"
 }
+NOTE: Traverse to the catalog array, query for the Part2 name, traverse to the colors array, query for a color with an id of 4, display the color property
 ```
 ## -- OR --
 ```
@@ -356,6 +357,7 @@ For this example we want to we want to get to the Part2 color blue so our field 
     "label": "defaultPartColor",
     "value": "catalog|?name eq Part2|colors|?1|color"
 }
+NOTE: Traverse to the catalog array, query for the Part2 name, traverse to the colors array, query for the 2nd element in the array, display the color property
 ```
 
 Both of these approaches will work. Please note that if the REST API return nodes within an array in a random order the first approach will net consistent results.
