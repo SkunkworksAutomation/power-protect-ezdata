@@ -358,7 +358,7 @@ For this example we want to we want to get to the Part2 color blue so our field 
 }
 ```
 
-Both of these approaches will work. Please note that if the REST API return nodes within an array in a random order the firt approach will net consistent results.
+Both of these approaches will work. Please note that if the REST API return nodes within an array in a random order the first approach will net consistent results.
 
 - Filters are seperated by the pipe character |
 - Items specified within a filter can be nested, or unnested
