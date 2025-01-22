@@ -147,13 +147,19 @@ function new-template {
         Sort-Object Name
         )
 
-        # PARSE OUT THE NUMBER OF THE LAST TEMPLATE
-        [int]$Number = ($Templates[-1].Name -split '\.' | `
-        Select-Object -First 1) `
-        -replace '[a-zA-Z]',''
+        if($Templates.Length -gt 0) {
+            # PARSE OUT THE NUMBER OF THE LAST TEMPLATE
+            [int]$Number = ($Templates[-1].Name -split '\.' | `
+            Select-Object -First 1) `
+            -replace '[a-zA-Z]',''
 
-        # NEW TEMPLATE NAME
-        $Name = "report$($Number+1).json"
+            # NEW TEMPLATE NAME
+            $Name = "report$($Number+1).json"
+        } else {
+            # NEW TEMPLATE NAME
+            $Name = "report1.json"
+        }
+        
 
         # Create a default sample report
         $object = [ordered]@{
