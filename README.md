@@ -231,9 +231,9 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 }
 ```
 - Run the the following command to test our template against testdata2.json
-- C:\Reports\customers\ezdata> test-extract -ConfigNo 2
+- C:\Reports\customers\ezdata> **test-extract -ConfigNo 2**
 ![test-extract1](/Assets/test-extract1.png)
 
 - If it looks good then lets run a live extract against the API endpoint
-- PS C:\Reports\customers\ezdata> start-extract -Console
+- PS C:\Reports\customers\ezdata> **start-extract -Console**
 ![start-extract2](/Assets/start-extract-console2.png)
