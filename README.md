@@ -234,5 +234,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 - C:\Reports\customers\ezdata> test-extract -ConfigNo 2
 ![test-extract1](/Assets/test-extract1.png)
 
-- If it looks good then lets run an extract
+- If it looks good then lets run a live extract
+- PS C:\Reports\customers\ezdata> start-extract -Console
+![start-extract1](/Assets/start-extract-console21.png)
 
