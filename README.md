@@ -138,29 +138,104 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
  - PS C:\Reports\customers\ezdata> **new-template**
 ![custom-extract](/Assets/new-template.png)
 
-- Path into the templates directory
-- Right click and edit report2.json which will look like this
+- The new-template wizard will ask you a few questions and create a template based on your answers
+- If you as respond 'y' to the test data question the code will connect to the first instance of PowerProtect Data Manager
+  - Once connected it will query the API endpoint and pull back up to the first 100 records for the configured API endpoint
+  - Get a property count for each object contained within the response and return the object with the highest property count
+  - It will then write this record to root directory with a number that corresponds with the template number
+
+- Right click and edit .\testdata2.json
+  - this test data will contain all of the field names we can select for our report.
+- Right click and edit .\templates\report2.json
 ```
 {
-  "apiEndpoint": "desiredEndpoint",
+  "apiEndpoint": "policies",
   "apiPaging": "random",
-  "apiVersion": 2,
-  "fileName": "dm-template.csv",
-  "sortField": "sortField",
+  "apiVersion": 3,
+  "fileName": "dm-policies.csv",
+  "sortField": "name",
   "sortOrder": "DESC",
   "lookBack": 1,
   "lookBackFormat": "yyyy-MM-ddThh:mm:ss.fffZ",
-  "filters": [
-    "sortField ge \"{{lookBack}}\""
-  ],
+  "filters": [],
   "fields": [
     {
-      "label": "id",
-      "value": "id"
+      "label": "label1",
+      "value": "value1"
+    },
+    {
+      "label": "label2",
+      "value": "value2"
+    },
+    {
+      "label": "label3",
+      "value": "value3"
+    },
+    {
+      "label": "label4",
+      "value": "value4"
+    },
+    {
+      "label": "label5",
+      "value": "value5"
+    },
+    {
+      "label": "label6",
+      "value": "value6"
     }
   ]
 }
 ```
+- Now lets select the fields we want for our report and update each field
+- For the last field value in our template we will showcase how to filter complex nested structures
+- Objects can be traversed down the dot (.) path
+- Arrays can be queried by object properties contained within the elements, or simply return a positional element
+```
+{
+  "apiEndpoint": "policies",
+  "apiPaging": "random",
+  "apiVersion": 3,
+  "fileName": "dm-policies.csv",
+  "sortField": "name",
+  "sortOrder": "DESC",
+  "lookBack": 1,
+  "lookBackFormat": "yyyy-MM-ddThh:mm:ss.fffZ",
+  "filters": [],
+  "fields": [
+    {
+      "label": "name",
+      "value": "name"
+    },
+    {
+      "label": "purpose",
+      "value": "purpose"
+    },
+    {
+      "label": "disabled",
+      "value": "disabled"
+    },
+    {
+      "label": "type",
+      "value": "type"
+    },
+    {
+      "label": "createdAt",
+      "value": "createdAt",
+      "format": "local"
+    },
+    {
+      "label": "schedule",
+      "value": "objectives|?type eq BACKUP|operations|?backupLevel eq SYNTHETIC_FULL|schedule.recurrence.pattern.type"
+    }
+  ]
+}
+```
+- Run the the following command to test our configuration
+- C:\Reports\customers\ezdata> test-extract -ConfigNo 2
+![test-extract1](/Assets/test-extract1.png)
+
+
+
 - Now lets say we want to create a data extract on the audit logs
 - We can get the values we need for the template right out of a session with PowerProtect Data Manager
 - Log into PowerProtect data manager and open your browser debugging tools (typically: f12)
