@@ -139,7 +139,9 @@ function new-template {
     [CmdletBinding()]
     param (
     )
-    begin {}
+    begin {
+        $Title = 'ezdata'
+    }
     process {
         # GET THE TEMPLATES
         $Templates = (Get-ChildItem `
@@ -160,27 +162,41 @@ function new-template {
             $Name = "report1.json"
         }
         
-
+        [string]$apiEndpoint = Read-Host `
+            -Prompt "[$($Title)]: (string) What API endpoint will be used?"
+        
+        [int]$apiVersion = Read-Host `
+            -Prompt "[$($Title)]: (int) What API version will be used?"
+        
+        [string]$sortField = Read-Host `
+            -Prompt "[$($Title)]: (string) Enter a sort field name?"
+        
+        [int]$noFields = Read-Host `
+            -Prompt "[$($Title)]: (int) How many fields in the template?"
+        
         # Create a default sample report
         $object = [ordered]@{
-            apiEndpoint = "desiredEndpoint"
+            apiEndpoint = $apiEndpoint
             apiPaging = "random"
-            apiVersion = 2
-            fileName = "dm-template.csv"
-            sortField = "sortField"
+            apiVersion = $apiVersion
+            fileName = "dm-$($apiEndpoint).csv"
+            sortField = $sortField
             sortOrder = "DESC"
             lookBack = 1
             lookBackFormat = "yyyy-MM-ddThh:mm:ss.fffZ"
             filters = @(
                 "sortField ge `"{{lookBack}}`""
             )
-            fields = @(
-                [ordered]@{
-                    label="id"
-                    value="id"
-                }
-            )
+            fields = @()
         }
+
+        for($i=1;$i -lt ($noFields+1);$i++) {
+            $object.fields += [ordered]@{
+                label= "label$($i)"
+                value= "value$($i)"
+            }
+        }
+
         $newTemplate = ".\templates\$($Name)"
         ($object | ConvertTo-Json -Depth 10) | `
         Out-File $newTemplate
