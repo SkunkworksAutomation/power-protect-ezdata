@@ -1,7 +1,6 @@
 function new-configuration {
     [CmdletBinding()]
-    param (
-    )
+    param ()
     begin {}
     process {
         $Title = 'ezdata'
@@ -137,10 +136,23 @@ function new-configuration {
 
 function new-template {
     [CmdletBinding()]
-    param (
-    )
+    param ()
     begin {
         $Title = 'ezdata'
+        function Get-PropertyCount {
+        param (
+            [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+            [object]$Object
+        )
+        $count = 0
+        foreach ($property in $Object.PSObject.Properties) {
+            if ($property.Value -is [PSCustomObject] -or $property.Value -is [PSObject]) {
+                $count += Get-PropertyCount $property.Value
+            }
+            $count++
+        }
+        return $count
+        }  # END FUNCTION
     }
     process {
         # GET THE TEMPLATES
@@ -157,16 +169,20 @@ function new-template {
 
             # NEW TEMPLATE NAME
             $Name = "report$($Number+1).json"
+            # NEW TEST DATA NAME
+            $dName = "testdata$($Number+1).json"
         } else {
             # NEW TEMPLATE NAME
             $Name = "report1.json"
+            # NEW TEST DATA NAME
+            $dName = "testdata1.json"
         }
         
         [string]$apiEndpoint = Read-Host `
             -Prompt "[$($Title)]: (string) What API endpoint will be used?"
         
         [int]$apiVersion = Read-Host `
-            -Prompt "[$($Title)]: (int) What API version will be used?"
+            -Prompt "[$($Title)]: (int) What version of the API will be used?"
         
         [string]$sortField = Read-Host `
             -Prompt "[$($Title)]: (string) Enter a sort field name?"
@@ -174,6 +190,9 @@ function new-template {
         [int]$noFields = Read-Host `
             -Prompt "[$($Title)]: (int) How many fields in the template?"
         
+        [string]$testData = Read-Host `
+            -Prompt "[$($Title)]: (string) Do you want to create some test data from: /v$($apiVersion)/$($apiEndpoint)? [Y|N]:"
+
         # Create a default sample report
         $object = [ordered]@{
             apiEndpoint = $apiEndpoint
@@ -185,7 +204,6 @@ function new-template {
             lookBack = 1
             lookBackFormat = "yyyy-MM-ddThh:mm:ss.fffZ"
             filters = @(
-                "sortField ge `"{{lookBack}}`""
             )
             fields = @()
         }
@@ -200,8 +218,46 @@ function new-template {
         $newTemplate = ".\templates\$($Name)"
         ($object | ConvertTo-Json -Depth 10) | `
         Out-File $newTemplate
+
+        if($testData -eq 'Y') {
+            $ConfigFile = '.\configuration\global.json'
+            $Exists = Test-Path -Path $ConfigFile -PathType Leaf
+            if($Exists) {
+                $Config = Get-Content $ConfigFile | convertfrom-json -Depth 10
+            } else {
+                throw "`n[ERROR]: $($ConfigFile) is missing!"
+            }
+
+            # CONNECT TO PPDM 1st Server
+            connect-dmapi -Server $Config.servers[0]
+            
+            $query = Invoke-RestMethod -Uri "$($dmAuthObject.server)/v$($apiVersion)/$($apiEndpoint)" `
+            -Method GET `
+            -ContentType 'application/json' `
+            -Headers ($dmAuthObject.token) `
+            -SkipCertificateCheck
+            $content = $query.content
+            Write-Host "[$($content.length)]: $($dmAuthObject.server)/v$($apiVersion)/$($apiEndpoint)"
+
+            $Counts = @()
+            for($i=0;$i -lt $content.length;$i++) {
+
+                $count = (Get-PropertyCount -Object $content[$i])
+                $object = [ordered]@{
+                    position = $i
+                    count = $count
+                }
+                $Counts += (New-Object -TypeName psobject -Property $object )
+            }
+
+            $Counts = $Counts | Sort-Object count -DESC
+
+            ($content[$Counts[0].position] | convertto-json -Depth 10) | Out-File ".\$($dName)"
+
+        } # END IF TESTDATA
+     
     }
-}
+} # END FUNCTION
 function connect-dmapi {
     [CmdletBinding()]
     param (
@@ -597,7 +653,7 @@ function new-query {
 } # END FUNCTION
 
 function disconnect-dmapi {
-[CmdletBinding()]
+    [CmdletBinding()]
     param (
         [Parameter(Mandatory=$true)]
         [int]$Version
@@ -734,12 +790,12 @@ function start-extract {
 function test-extract {
     [CmdletBinding()]
     param (
-    [Parameter(Mandatory=$true)]
-    [int]$ConfigNo
+        [Parameter(Mandatory=$true)]
+        [int]$ConfigNo
     )
     begin {}
     process {
-        $Data = Get-Content ".\Dummy.json" | `
+        $Data = Get-Content ".\testdata$($ConfigNo).json" | `
         ConvertFrom-Json -Depth 10
         $Template = Get-Content ".\templates\report$($ConfigNo).json" | `
         ConvertFrom-Json -Depth 10
