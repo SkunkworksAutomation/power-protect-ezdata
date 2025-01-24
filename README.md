@@ -125,7 +125,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 
 # Run your first extract to the PowerShell 7 console: report1.json
 - PS C:\Reports\customers\ezdata> **start-extract -Console**
-![StartExtractConsole](/Assets/start-extract-console.png)
+![StartExtractConsole](/Assets/start-extract-console1.png)
 
 # Run your first extract and export to csv (in the reports directory): report1.json
 - PS C:\Reports\customers\ezdata> **start-extract**
@@ -186,7 +186,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
   ]
 }
 ```
-- Now lets select the fields we want for our report and update each field
+- Now lets select the fields we want on our report from testdata2.json
 - For the last field value in our template we will showcase how to filter complex nested structures
 - Objects can be traversed down the dot (.) path
 - Arrays can be queried by object properties contained within the elements, or simply return a positional element
@@ -230,6 +230,9 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
   ]
 }
 ```
-- Run the the following command to test our template
+- Run the the following command to test our template against testdata2.json
 - C:\Reports\customers\ezdata> test-extract -ConfigNo 2
 ![test-extract1](/Assets/test-extract1.png)
+
+- If it looks good then lets run an extract
+
