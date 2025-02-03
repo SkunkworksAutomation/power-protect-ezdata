@@ -676,7 +676,9 @@ function start-extract {
     [CmdletBinding()]
     param (
     [Parameter(Mandatory=$false)]
-    [switch]$Console
+    [switch]$Console,
+    [Parameter(Mandatory=$false)]
+    [switch]$MergeReports
     )
     begin {
         $ConfigFile = '.\configuration\global.json'
@@ -785,6 +787,11 @@ function start-extract {
             } # END TRY CATCH BLOCK
         } # END RETRIES
     } # END SERVERS
+    if(!$Console) {
+        if($MergeReports) {
+            merge-reports
+        }
+    }
 } # END PROCESS
 } # END FUNCTION
 function test-extract {
@@ -806,6 +813,56 @@ function test-extract {
             -Fields $Template.fields
         }
         $Report | format-Table -AutoSize
-    }
-}
+    } # END PROCESS
+} # END FUNCTION
+
+function merge-reports {
+    [CmdletBinding()]
+    param (
+    )
+    begin {}
+    process {
+        $Title = "ezdata"
+        $Date = Get-Date
+        $Files = Get-ChildItem .\reports\*.csv -File
+        $Folder = "$($Date.toString('yyyy-MM-dd'))"
+        $Exists = Test-Path -Path ".\reports\$($Folder)" -PathType Container
+
+        if(!$Exists) {
+            Write-Host "`n[$($Title)]: .\reports\$($Folder) not found... creating it." -ForegroundColor Yellow
+            New-Item -Path ".\reports\$($Folder)" -ItemType Directory
+        }
+        Write-Host "`n[$($Title)]: Merging report files..." -ForegroundColor Blue
+        $Merge= @()
+        foreach($File in $Files) {
+
+            $Object = [ordered]@{
+                fileName = $File.Name
+                filePath = $File.FullName
+                groupName = $File.Name -Split '\-dm\-' | Select-Object -last 1
+                dataManager = $File.Name -Split '\-dm\-' | Select-Object -first 1
+            }
+            $Merge += (New-Object -TypeName psobject -Property $Object)
+        }
+
+        $Groups = $Merge| Group-Object groupName
+
+        foreach($Row in $Groups) {
+
+            $dataSet = @()
+            # IMPORT THE CSV FILES FOR THAT GROUP
+            $Row.Group | ForEach-Object {
+                $Import = Import-Csv $_.filePath
+                foreach($record in $Import) {
+                    $Object = $record
+                    $Object | Add-Member -NotePropertyName ppdm -NotePropertyValue $_.dataManager
+                    $dataSet += $Object
+                }
+                
+                $dataSet | Export-Csv ".\reports\$($Folder)\evt-$($_.groupName)"
+            }
+        } # END GROUPS
+    } # END PROCESS
+} # END FUNCTION
+
 Export-ModuleMember -Function *
