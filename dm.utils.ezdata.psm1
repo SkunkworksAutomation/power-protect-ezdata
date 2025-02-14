@@ -503,13 +503,18 @@ function new-query {
                 for($i=0;$i -lt $filters.length;$i++) {
                     switch -Regex ($filters[$i]) {
                         '^\?[aA-zZ]' {
-                            # RETURN DATA IN THE ARRAY BASED ON A QUERY
-                            # STRIP OUT THE QUESTION MARK
-                            [array]$vValue = ($filters[$i] -replace '\?','') -split '\s'
+                            <#
+                                RETURN DATA IN THE ARRAY BASED ON A QUERY
+                                STRIP OUT THE QUESTION MARK
+                                SPLIT ON SPACES EXCEPT BETWEEN SINGLE AND DOUBLE QUOTES
+                            #>
+                            [array]$vValue = ($filters[$i] -replace '\?','') `
+                            -split "\s+(?=(?:[^\'`"]*[\'`"][^\'`"]*[\'`"])*[^\'`"]*$)" `
+                            -replace "`"|'",""
                             break;
                         }
                         '^\?[0-9]' {
-                            # RETURN DATA IN THE ARRAY BASED ON A QUERY
+                            # RETURN DATA IN THE ARRAY BASED ON POSITION
                             [int]$vValue = ($filters[$i] -replace '\?','')
                             break;
                         }
@@ -536,6 +541,7 @@ function new-query {
                     # ValueType FOR INTS USED IN A POSITIONAL QUERY OF AN ARRAY
                     # Object (default) USED TO QUERY FOR ROOT AND NESTED PROPERTIES
                     $Type = ($Query.Value).GetType().BaseType.Name
+                    # Write-Host $Query.Value[2]
                     switch($Type) {
                         'Array' {
                             # ARRAY - QUERY THE ARRAY BASED ON A VALUES
@@ -543,19 +549,19 @@ function new-query {
                                 'eq' {
                                     # EQUALS
                                     $fieldValue = $fieldValue | `
-                                    Where-Object {$_."$($Query.Value[0])" -eq "$($Query.Value[2])"}
+                                    Where-Object {$_."$($Query.Value[0])" -eq $Query.Value[2]}
                                     break;
                                 }
                                 'ne' {
                                     # NOT EQUALS
                                     $fieldValue = $fieldValue | `
-                                    Where-Object {$_."$($Query.Value[0])" -ne "$($Query.Value[2])"}
+                                    Where-Object {$_."$($Query.Value[0])" -ne $Query.Value[2]}
                                     break;
                                 }
                                 'match' {
                                     # MATCH USED TO PASS IN REGEX
                                     $fieldValue = $fieldValue | `
-                                    Where-Object {$_."$($Query.Value[0])" -match "$($Query.Value[2])"}
+                                    Where-Object {$_."$($Query.Value[0])" -match $Query.Value[2]}
                                     break;
                                 }
                             }               
