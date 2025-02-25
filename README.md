@@ -45,7 +45,8 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
   "sortField": "startTime",
   "sortOrder": "DESC",
   "lookBack": 1,
-  "lookBackFormat": "yyyy-MM-ddThh:mm:ss.fffZ",
+  "lookBackUnit": "days",
+  "lookBackFormat": "yyyy-MM-ddTHH:mm:ss.fffZ",
   "filters": [
     "startTime ge \"{{lookBack}}\"",
     "and category eq \"PROTECT\"",
@@ -102,7 +103,8 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 - **fileName**: The name of the csv file we want to drop into the reports folder (the prefix will be the IP, or FQDN of the PowerProtect Data Manager server)
 - **sortField**: The field we want to sort the data on
 - **sortOrder**: ASC, DESC
-- **lookBack**: The number of days we want to report against (Todays date - lookBack)
+- **lookBack**: The number of lookBackUnit we want to report against (Todays date - lookBack in lookBackUnit)
+- **lookBackUnit**: The unit of measure we want to look back (years, months, days, hours, minutes, seconds)
 - **lookBackFormat**: UTC, you can use this to set a specified time "yyyy-MM-ddT18:00:00.000Z".
     - In the example above if we are querying the activities REST API based on the activity startTime. The time from the REST API is stored in UTC so based on the lookBack and lookBackFormat it would return every activity with a startTime greater than TODAY at midnight UTC if the offset was -6:00.
 - **filters**: Any critera we want to filter on. In the example above we are querying for activities with a startTime greater than or equal to {{lookBack}} with a category of PROTECT (backups), and a classType JOB_GROUP (protection policies)
@@ -156,7 +158,8 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
   "sortField": "name",
   "sortOrder": "DESC",
   "lookBack": 1,
-  "lookBackFormat": "yyyy-MM-ddThh:mm:ss.fffZ",
+  "lookBackUnit": "days",
+  "lookBackFormat": "yyyy-MM-ddTHH:mm:ss.fffZ",
   "filters": [],
   "fields": [
     {
@@ -199,7 +202,8 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
   "sortField": "name",
   "sortOrder": "DESC",
   "lookBack": 1,
-  "lookBackFormat": "yyyy-MM-ddThh:mm:ss.fffZ",
+  "lookBackUnit": "days",
+  "lookBackFormat": "yyyy-MM-ddTHH:mm:ss.fffZ",
   "filters": [],
   "fields": [
     {
