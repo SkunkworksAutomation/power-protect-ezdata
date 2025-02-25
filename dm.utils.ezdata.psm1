@@ -82,7 +82,8 @@ function new-configuration {
             sortField = "startTime"
             sortOrder = "DESC"
             lookBack = 1
-            lookBackFormat = "yyyy-MM-ddThh:mm:ss.fffZ"
+            lookBackUnit = "days"
+            lookBackFormat = "yyyy-MM-ddTHH:mm:ss.fffZ"
             filters = @(
                 "startTime ge `"{{lookBack}}`""
                 "and category eq `"PROTECT`""
@@ -202,7 +203,8 @@ function new-template {
             sortField = $sortField
             sortOrder = "DESC"
             lookBack = 1
-            lookBackFormat = "yyyy-MM-ddThh:mm:ss.fffZ"
+            lookBackUnit = "days"
+            lookBackFormat = "yyyy-MM-ddTHH:mm:ss.fffZ"
             filters = @(
             )
             fields = @()
@@ -720,10 +722,48 @@ function start-extract {
                         if($Filter -match '(?<=\{\{)(.*?)(?=\}\})') {                            
                             switch($Matches[0]) {
                                 'lookBack' {
-                                    $Date = (Get-Date).AddDays(-$Template.lookBack)
-                                    Write-Host "[Regex]: Replacing data binding for: {{$($Matches[0])}} with $($Date.ToString("$($Template.lookBackFormat)"))" -ForegroundColor Magenta
+                                    switch -Regex ($Template.lookBackUnit){
+                                        '^years' {
+                                            $Date = (Get-Date).
+                                            AddYears(-$Template.lookBack).
+                                            ToUniversalTime()
+                                            break;
+                                        }
+                                        '^months' {
+                                            $Date = (Get-Date).
+                                            AddMonths(-$Template.lookBack).
+                                            ToUniversalTime()
+                                            break;
+                                        }
+                                        '^days' {
+                                            $Date = (Get-Date).
+                                            AddDays(-$Template.lookBack).
+                                            ToUniversalTime()
+                                            break;
+                                        }
+                                        '^hours' {
+                                            $Date = (Get-Date).
+                                            AddHours(-$Template.lookBack).
+                                            ToUniversalTime()
+                                            break;
+                                        }
+                                        '^minutes' {
+                                            $Date = (Get-Date).
+                                            AddMinutes(-$Template.lookBack).
+                                            ToUniversalTime()
+                                            break;
+                                        }
+                                        default {
+                                            $Date = (Get-Date).
+                                            AddSeconds(-$Template.lookBack).
+                                            ToUniversalTime()
+                                            break;
+                                        }
+                                    } # END SWITCH
+
+                                    Write-Host "[Regex]: Replacing data binding for: {{lookBack)}} with $($Date.ToString("$($Template.lookBackFormat)"))" -ForegroundColor Magenta
                                     $Filter = $Filter `
-                                    -replace "\{\{$($Matches[0])\}\}", `
+                                    -replace "\{\{lookBack\}\}", `
                                     $Date.ToString("$($Template.lookBackFormat)")
                                 }
                             } # END SWITCH
@@ -740,6 +780,7 @@ function start-extract {
                 }
 
                 Write-Host "`n[Paging]: $($Template.apiPaging)" -ForegroundColor Yellow
+                Write-Host "[LookBack]: unit: $($Template.lookBackUnit), value: $($Template.lookBack)" -ForegroundColor Yellow
                 Write-Host "[Filters]: $($Filters)" -ForegroundColor Yellow
                 Write-Host "[Sorting]: orderby=$($Template.sortField) $($Template.sortOrder)" -ForegroundColor Yellow 
                 # GET THE PAGING METHOD
