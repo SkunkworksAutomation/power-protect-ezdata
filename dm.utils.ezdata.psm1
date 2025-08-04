@@ -595,7 +595,24 @@ function new-query {
             # SPECIAL FIELD HANDLING
             $formatted = $null
             switch -Regex ($Field.value) {
-            '([b|B]ytes | [s|S]ize)' {
+            '[b|B]ytes' {
+                # FORMAT THE SIZE
+                if($null -eq $Field.format) {
+                    $formatted = $fieldValue
+                } else {
+                    $filtered = $fieldValue | Where-Object { $_ }
+                    if($filtered) {
+                        # FORMAT THE NUMBER
+                        $base = $Field.format -replace "[a-zA-Z]", ""
+                        $size = Convert-BytesToSize -Size $filtered -Base $base
+                        $formatted = "$($size.size) $($size.uom)"
+                    } else {
+                        $formatted = $fieldValue
+                    }
+                }
+                break;
+            }
+            '[s|S]ize' {
                 # FORMAT THE SIZE
                 if($null -eq $Field.format) {
                     $formatted = $fieldValue
