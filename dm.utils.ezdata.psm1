@@ -595,7 +595,7 @@ function new-query {
             # SPECIAL FIELD HANDLING
             $formatted = $null
             switch -Regex ($Field.value) {
-            '[b|B]ytes' {
+            '([b|B]ytes | [s|S]ize)' {
                 # FORMAT THE SIZE
                 if($null -eq $Field.format) {
                     $formatted = $fieldValue
