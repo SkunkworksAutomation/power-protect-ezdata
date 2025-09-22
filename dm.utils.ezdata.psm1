@@ -612,7 +612,7 @@ function new-query {
                 }
                 break;
             }
-            '^duration$' {
+            'duration' {
                 # FORMAT THE DURATION
                 if($null -eq $fieldValue ) {
                     $timeSpan = 0
