@@ -2,14 +2,14 @@
   "apiEndpoint": "activities",
   "apiPaging": "random",
   "apiVersion": 3,
-  "fileName": "dm-activities-job.csv",
+  "fileName": "dm-activities-job_group.csv",
   "sortField": "startedAt",
   "sortOrder": "DESC",
   "lookBack": 1,
   "lookBackUnit": "days",
   "lookBackFormat": "yyyy-MM-ddTHH:mm:ss.fffZ",
   "filters": [
-    "classType eq \"JOB\"",
+    "classType eq \"JOB_GROUP\"",
     "and category eq \"BACKUP\"",
     "and startedAt ge \"{{lookBack}}\""
   ],
