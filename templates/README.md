@@ -1,4 +1,4 @@
-# Report Templates
+# Templates
 | Name        | Filter                                                                                         |
 |:-----------:|:-----------------------------------------------------------------------------------------------|
 | activities1 | classType eq "JOB" and category eq "BACKUP" and startedAt ge "{{lookBack}}"                    |
