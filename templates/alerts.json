@@ -1,0 +1,51 @@
+{
+  "apiEndpoint": "alerts",
+  "apiPaging": "random",
+  "apiVersion": 2,
+  "fileName": "dm-alerts.csv",
+  "sortField": "lastOccurrenceTime",
+  "sortOrder": "DESC",
+  "lookBack": 1,
+  "lookBackUnit": "days",
+  "lookBackFormat": "yyyy-MM-ddTHH:mm:ss.fffZ",
+  "filters": [
+    "severity eq \"CRITICAL\"",
+    "and lastOccurrenceTime gt \"{{lookBack}}\"",
+    "and acknowledgement.acknowledgeState eq \"UNACKNOWLEDGED\""
+  ],
+  "fields": [
+    {
+      "label": "lastOccurrenceTime",
+      "value": "lastOccurrenceTime",
+      "format": "local"
+    },
+    {
+      "label": "category",
+      "value": "category"
+    },
+    {
+      "label": "severity",
+      "value": "severity"
+    },
+    {
+      "label": "acknowledgement",
+      "value": "acknowledgement.acknowledgeState"
+    },
+    {
+      "label": "messageID",
+      "value": "messageID"
+    },
+    {
+      "label": "message",
+      "value": "message"
+    },
+    {
+      "label": "detailedDescription",
+      "value": "detailedDescription"
+    },
+    {
+      "label": "responseAction",
+      "value": "responseAction"
+    }
+  ]
+}
