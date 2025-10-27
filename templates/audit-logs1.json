@@ -1,0 +1,53 @@
+{
+  "apiEndpoint": "audit-logs",
+  "apiPaging": "random",
+  "apiVersion": 2,
+  "fileName": "dm-audit-logs.csv",
+  "sortField": "changedTime",
+  "sortOrder": "DESC",
+  "lookBack": 1,
+  "lookBackUnit": "days",
+  "lookBackFormat": "yyyy-MM-ddTHH:mm:ss.fffZ",
+  "filters": [
+    "changedTime ge \"{{lookBack}}\""
+  ],
+  "fields": [
+    {
+      "label": "changedTime",
+      "value": "changedTime",
+      "format":"local"
+    },
+    {
+      "label": "auditType",
+      "value": "auditType"
+    },
+    {
+      "label": "messageID",
+      "value": "messageID"
+    },
+    {
+      "label": "changeDescription",
+      "value": "changeDescription"
+    },
+    {
+      "label": "changedBy",
+      "value": "changedBy.username"
+    },
+    {
+      "label": "resourceName",
+      "value": "changedObject.resourceName"
+    },
+    {
+      "label": "resourceType",
+      "value": "changedObject.resourceType"
+    },
+    {
+      "label": "before",
+      "value": "before"
+    },
+    {
+      "label": "after",
+      "value": "after"
+    }
+  ]
+}
