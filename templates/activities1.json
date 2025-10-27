@@ -32,15 +32,18 @@
     },
     {
       "label": "createdAt",
-      "value": "createdAt"
+      "value": "createdAt",
+      "format": "local"
     },
     {
       "label": "startedAt",
-      "value": "startedAt"
+      "value": "startedAt",
+      "format": "local"
     },
     {
       "label": "completedAt",
-      "value": "completedAt"
+      "value": "completedAt",
+      "format": "local"
     },
     {
       "label": "assetName",
@@ -76,7 +79,8 @@
     },
     {
       "label": "scheduleNext",
-      "value": "scheduleInfo.nextScheduledTime"
+      "value": "scheduleInfo.nextScheduledTime",
+      "format": "local"
     }
   ]
 }
