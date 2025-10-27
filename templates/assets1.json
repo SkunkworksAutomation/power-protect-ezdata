@@ -1,0 +1,87 @@
+{
+  "apiEndpoint": "assets",
+  "apiPaging": "random",
+  "apiVersion": 2,
+  "fileName": "dm-assets-vms.csv",
+  "sortField": "name",
+  "sortOrder": "ASC",
+  "lookBack": 1,
+  "lookBackUnit": "days",
+  "lookBackFormat": "yyyy-MM-ddTHH:mm:ss.fffZ",
+  "filters": [
+    "type eq \"VMWARE_VIRTUAL_MACHINE\"",
+    "and lastDiscoveryStatus in (\"NEW\",\"DETECTED\",\"NOT_DETECTED\")"
+  ],
+  "fields": [
+    {
+      "label": "name",
+      "value": "name"
+    },
+    {
+      "label": "status",
+      "value": "status"
+    },
+    {
+      "label": "type",
+      "value": "type"
+    },
+    {
+      "label": "guestOS",
+      "value": "details.vm.guestOS"
+    },
+    {
+      "label": "primaryIp",
+      "value": "details.vm.primaryIpAddress"
+    },
+    {
+      "label": "vcenterName",
+      "value": "details.vm.vcenterName"
+    },
+    {
+      "label": "datacenter",
+      "value": "details.vm.datacenter"
+    },
+    {
+      "label": "folder",
+      "value": "details.vm.folder"
+    },
+    {
+      "label": "esxCluster",
+      "value": "details.vm.clusterName"
+    },
+    {
+      "label": "resourcePool",
+      "value": "details.vm.resourcePool"
+    },
+    {
+      "label": "esxHost",
+      "value": "details.vm.hostName"
+    },
+    {
+      "label": "policyName",
+      "value": "protectionPolicy.name"
+    },
+    {
+      "label": "policyType",
+      "value": "protectionPolicy.type"
+    },
+    {
+      "label": "protectionStatus",
+      "value": "protectionStatus"
+    },
+    {
+      "label": "discoveredSize",
+      "value": "size",
+      "format": "base10"
+    },
+    {
+      "label": "licensedSize",
+      "value": "protectionCapacity.size",
+      "format":"base10"
+    },
+    {
+      "label": "lastAvailableCopyTime",
+      "value": "lastAvailableCopyTime"
+    }
+  ]
+}

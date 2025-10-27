@@ -1,0 +1,67 @@
+{
+  "apiEndpoint": "assets",
+  "apiPaging": "random",
+  "apiVersion": 2,
+  "fileName": "dm-assets-oracle.csv",
+  "sortField": "name",
+  "sortOrder": "ASC",
+  "lookBack": 1,
+  "lookBackUnit": "days",
+  "lookBackFormat": "yyyy-MM-ddTHH:mm:ss.fffZ",
+  "filters": [
+    "type eq \"ORACLE_DATABASE\"",
+    "and lastDiscoveryStatus in (\"NEW\",\"DETECTED\",\"NOT_DETECTED\")"
+  ],
+  "fields": [
+    {
+      "label": "name",
+      "value": "name"
+    },
+    {
+      "label": "status",
+      "value": "status"
+    },
+    {
+      "label": "type",
+      "value": "type"
+    },
+    {
+      "label": "clusterName",
+      "value": "details.database.clusterName"
+    },
+    {
+      "label": "clusterType",
+      "value": "details.database.clusterType"
+    },
+    {
+      "label": "instance",
+      "value": "details.database.appServerName"
+    },
+    {
+      "label": "policyName",
+      "value": "protectionPolicy.name"
+    },
+    {
+      "label": "policyType",
+      "value": "protectionPolicy.type"
+    },
+    {
+      "label": "protectionStatus",
+      "value": "protectionStatus"
+    },
+    {
+      "label": "discoveredSize",
+      "value": "size",
+      "format": "base10"
+    },
+    {
+      "label": "licensedSize",
+      "value": "protectionCapacity.size",
+      "format":"base10"
+    },
+    {
+      "label": "lastAvailableCopyTime",
+      "value": "lastAvailableCopyTime"
+    }
+  ]
+}
