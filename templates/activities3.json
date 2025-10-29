@@ -1,0 +1,87 @@
+{
+  "apiEndpoint": "activities",
+  "apiPaging": "random",
+  "apiVersion": 3,
+  "fileName": "dm-activities-faild-job.csv",
+  "sortField": "createdAt",
+  "sortOrder": "DESC",
+  "lookBack": 1,
+  "lookBackUnit": "days",
+  "lookBackFormat": "yyyy-MM-ddTHH:mm:ss.fffZ",
+  "filters": [
+    "(result.status in (\"FAILED\")",
+    "or state in (\"FAILED\"))",
+    "and classType eq \"JOB\"",
+    "and assetReferences.id ne null",
+    "and startedAt gt \"{{lookBack}}\""
+  ],
+  "fields": [
+    {
+      "label": "displayId",
+      "value": "displayId"
+    },
+    {
+      "label": "description",
+      "value": "description"
+    },
+    {
+      "label": "classType",
+      "value": "classType"
+    },
+    {
+      "label": "category",
+      "value": "category"
+    },
+    {
+      "label": "createdAt",
+      "value": "createdAt",
+      "format": "local"
+    },
+    {
+      "label": "startedAt",
+      "value": "startedAt",
+      "format": "local"
+    },
+    {
+      "label": "completedAt",
+      "value": "completedAt",
+      "format": "local"
+    },
+    {
+      "label": "assetName",
+      "value": "references|?usage eq ASSET|name"
+    },
+    {
+      "label": "hostName",
+      "value": "references|?usage eq SOURCE_HOST|name"
+    },
+    {
+      "label": "policyName",
+      "value": "references|?usage eq PROTECTION_POLICY|name"
+    },
+    {
+      "label": "storageTarget",
+      "value": "references|?usage eq DATA_TARGET|name"
+    },
+    {
+      "label": "state",
+      "value": "state"
+    },
+    {
+      "label": "status",
+      "value": "result.status"
+    },
+    {
+      "label": "messageId",
+      "value": "result|issues|?0|messageId"
+    },
+    {
+      "label": "message",
+      "value": "result|issues|?0|message"
+    },
+    {
+      "label": "responseAction",
+      "value": "result|issues|?0|responseAction"
+    }
+  ]
+}
