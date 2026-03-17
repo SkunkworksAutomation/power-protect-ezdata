@@ -11,7 +11,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 
 # Dependencies
 - Windows 10 or 11
-- PowerShell 7.(latest)
+- [PowerShell 7.(latest)](https://github.com/powershell/powershell/releases)
 
 # Output to csv
 - No additional dependencies
