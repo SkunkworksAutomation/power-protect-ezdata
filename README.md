@@ -6,11 +6,11 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
     - Please note that the copies-search REST API endpoint requires admin, limited admin, backup admin, or restore admin credentials
     - The best practice is to use a read only set of credentials for reporting
   - When the reports run they will create a folder in the reports directory named "yyyy-MM-dd"
-    - The report files will be dropped into the reports\\"yyyy-MM-dd" folder
+    - The report files will be dropped into the .\\reports\\"yyyy-MM-dd" folder
     - If there is more than one PowerProtect DM instance the module will automatically create a consolidated report for each report template
     - A column callled PPDM will be added to each of the colsolidated report files to identify the source PPDM server
     - The report file names, which follow this convention {{ppdm_.fqdn}}-{{template_report_fileName}}, are used to create the consolidated reports
-    - We parse the complete file names and use a regular expression to find the "-" delimiter located after .com,.net or .local
+    - We parse the complete file names and use a regular expression to find the "-" delimiter located after .com, .net or .local
     - From there the reports are grouped by their {{template_report_fileName}} and consolidated. The source files are left in place, unmodified
 
 # Use case
