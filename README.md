@@ -29,6 +29,7 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 # Notes
 > [!WARNING]
 > Some of these data extracts can potentially be very large. Ensure you are adjusting any parameters within reasonable ranges and using the correct paging methodology.
+
 > [!WARNING]
 > Please note that the copies-search REST API endpoint requires admin, limited admin, backup admin, or restore admin credentials
 > The best practice is to use a read only set of credentials for reporting
