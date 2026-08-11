@@ -164,10 +164,21 @@ function new-template {
 
         if($Templates.Length -gt 0) {
             # PARSE OUT THE NUMBER OF THE LAST TEMPLATE
-            [int]$Number = ($Templates[-1].Name -split '\.' | `
+            $Parsed = ($Templates[-1].Name -split '\.' | `
             Select-Object -First 1) `
             -replace '[a-zA-Z]',''
 
+            if($Parsed -match '-\d+$'){
+                $Number = $Parsed
+            } else {
+                $Number = 0
+            }
+            <#
+            # PARSE OUT THE NUMBER OF THE LAST TEMPLATE
+            [int]$Number = ($Templates[-1].Name -split '\.' | `
+            Select-Object -First 1) `
+            -replace '[a-zA-Z]',''
+            #>
             # NEW TEMPLATE NAME
             $Name = "report$($Number+1).json"
             # NEW TEST DATA NAME
@@ -199,7 +210,7 @@ function new-template {
             apiEndpoint = $apiEndpoint
             apiPaging = "random"
             apiVersion = $apiVersion
-            fileName = "dm-$($apiEndpoint).csv"
+            fileName = "report-$($apiEndpoint).csv"
             sortField = $sortField
             sortOrder = "DESC"
             lookBack = 1
@@ -260,6 +271,7 @@ function new-template {
      
     }
 } # END FUNCTION
+
 function connect-dmapi {
     [CmdletBinding()]
     param (
@@ -396,6 +408,88 @@ function get-serial {
     }
 }
 
+function get-special {
+    [CmdletBinding()]
+    param (
+        [Parameter( Mandatory=$true)]
+        [string]$Endpoint,
+        [Parameter( Mandatory=$true)]
+        [int]$Version,
+        [Parameter( Mandatory=$true)]
+        [array]$Filters,
+        [Parameter( Mandatory=$true)]
+        [string]$OrderBy
+        
+    )
+    begin {}
+    process {
+        
+        $Page = 1
+        $Results = @()
+
+        $Body = [ordered]@{
+            pageSize = 100
+            page = $Page
+            orderby = $OrderBy
+            filter = "$($Filters -join ' ')"
+        }
+        
+        Write-Host "[QUERY]: $($Body | ConvertTo-Json -Depth 10)" -ForegroundColor Yellow
+        $Query =  Invoke-RestMethod -Uri "$($dmAuthObject.server)/v$($Version)/$($Endpoint)" `
+        -Method POST `
+        -ContentType 'application/json' `
+        -Headers ($dmAuthObject.token) `
+        -Body ($Body | ConvertTo-Json -Depth 10) `
+        -SkipCertificateCheck
+
+        # CAPTURE THE RESULTS
+        $Results = $Query.content
+        
+        if($Query.page.totalPages -gt 1) {
+            
+            # INCREMENT THE PAGE NUMBER
+            $Page++
+           
+            # PAGE THROUGH THE RESULTS
+            do {
+
+                $Body = [ordered]@{
+                    pageSize = 100
+                    page = $Page
+                    orderby = $OrderBy
+                    filter = "$($Filters -join ' ')"
+                }
+
+                $Percent = [math]::Round(($Page / $Query.page.totalPages)*100,2)
+                Write-Progress `
+                -Activity "Paging through results..." `
+                -Status "Percent complete: $($Page) of $($Query.page.totalPages) | $($Percent)%" `
+                -PercentComplete $($Percent)
+
+                Write-Host "[QUERY]: $($Body | ConvertTo-Json -Depth 10)" -ForegroundColor Yellow
+
+                $Paging = Invoke-RestMethod -Uri "$($dmAuthObject.server)/v$($Version)/$($Endpoint)" `
+                -Method POST `
+                -ContentType 'application/json' `
+                -Headers ($dmAuthObject.token) `
+                -Body ($Body | ConvertTo-Json -Depth 10) `
+                -SkipCertificateCheck
+
+                # CAPTURE THE RESULTS
+                $Results += $Paging.content
+
+                # INCREMENT THE PAGE NUMBER
+                $Page++   
+            } 
+            until ($Paging.page.number -eq $Query.page.totalPages)
+
+        }
+        
+        return $Results
+
+    } # END PROCESS
+} # End function
+
 function Convert-BytesToSize {
     [CmdletBinding()]
     param
@@ -465,7 +559,6 @@ function Convert-BytesToSize {
         return $NewSize
 
 }
-
 function new-query {
     [CmdletBinding()]
     param (
@@ -684,9 +777,7 @@ function start-extract {
     [CmdletBinding()]
     param (
     [Parameter(Mandatory=$false)]
-    [switch]$Console,
-    [Parameter(Mandatory=$false)]
-    [switch]$MergeReports
+    [switch]$Console
     )
     begin {
         $ConfigFile = '.\configuration\global.json'
@@ -770,9 +861,14 @@ function start-extract {
                         }
                         $Filters += $Filter
                     }
-                    # THIS ENDPOINT IS FILTERED
-                    $endpoint = `
-                    "$($Template.apiEndpoint)?filter=$($Filters)&orderby=$($Template.sortField) $($Template.sortOrder)"
+                    if($Template.apiPaging -ne 'special'){
+                        # THIS ENDPOINT IS FILTERED
+                        $endpoint = `
+                        "$($Template.apiEndpoint)?filter=$($Filters)&orderby=$($Template.sortField) $($Template.sortOrder)"
+                    } else {
+                         $endpoint = $Template.apiEndpoint
+                    }
+                    
                 } else {
                     # THIS ENDPOINT IS UNFILTERED
                     $endpoint = `
@@ -785,6 +881,15 @@ function start-extract {
                 Write-Host "[Sorting]: orderby=$($Template.sortField) $($Template.sortOrder)" -ForegroundColor Yellow 
                 # GET THE PAGING METHOD
                 switch($Template.apiPaging) {
+                    'special' {
+                        # USE SPECIAL PAGING
+                        $Query = get-special `
+                        -Endpoint $endpoint `
+                        -Version $Template.apiVersion `
+                        -Filters $Filters `
+                        -OrderBy "$($Template.sortField) $($Template.sortOrder)"
+                        break;
+                    }
                     'serial' {
                         # USE SERIAL PAGING
                         $Query = get-serial `
@@ -812,7 +917,51 @@ function start-extract {
                 if($Console) {
                     $Report | Format-Table -AutoSize
                 } else {
-                    $Report | Export-csv ".\reports\$($Server.ppdm)-$($Template.fileName)"
+                    # The name of the new folder we want to create
+                    $Folder = (Get-Date).toString("yyyy-MM-dd")
+                    # Test the path
+                    $Exists = Test-Path ".\reports\$($Folder)" -PathType Container
+                    if(!$Exists){
+                        New-Item -Path ".\reports\" -Name $Folder -ItemType Directory
+                    }
+                    # Write the reports to disk
+                    $Report | Export-csv ".\reports\$($Folder)\$($Server.ppdm)-$($Template.fileName)"
+
+                    # Get a list of reports
+                    $files = Get-ChildItem `
+                    -Path ".\reports\$($Folder)" `
+                    -Filter "*.csv" | `
+                    Where-Object {
+                        $_.Name -notmatch "^consolidated"
+                    }
+                    # Group the files together
+                    # Look for the dash AFTER .com, .net, or .local
+                    # Split and group on the report file name
+                    # $Template.fileName
+                    $Regex = "(?<=\.(?:com|net|local))-"
+                    $rg = $files | `
+                    Group-Object {
+                        $_.Name -split $Regex | `
+                        Select-Object -Last 1 `
+                    }
+                    # Colsolidate the files if there is more than one PPDM server in the configuration
+                    if(($Config.servers).length -gt 1){
+                        # Iterate over the top level, go into the Group once inside this loop
+                        foreach($g in $rg){
+                            # Create a seperate consolidated report
+                            foreach($item in $g.Group){
+                                $csv = Import-Csv -Path $item.FullName
+                                $updates = $csv | Select-Object *,
+                                    @{l="PPDM";e={$item.Name -split $Regex | Select-Object -First 1}}
+                                $o += $updates                                                    
+                            }
+                            # Export to CSV
+                            $o | Export-Csv `
+                            -Path ".\reports\$($Folder)\consolidated-report-$($item.Name -split $Regex | Select-Object -Last 1)"
+                            # Reset the report object var for the next consolidation report
+                            $o = @()
+                        }
+                    }                    
                 }
             } # END REPORT
 
@@ -833,82 +982,7 @@ function start-extract {
                 }
             } # END TRY CATCH BLOCK
         } # END RETRIES
-    } # END SERVERS
-    if(!$Console) {
-        if($MergeReports) {
-            merge-reports
-        }
-    }
-} # END PROCESS
-} # END FUNCTION
-function test-extract {
-    [CmdletBinding()]
-    param (
-        [Parameter(Mandatory=$true)]
-        [int]$ConfigNo
-    )
-    begin {}
-    process {
-        $Data = Get-Content ".\testdata$($ConfigNo).json" | `
-        ConvertFrom-Json -Depth 10
-        $Template = Get-Content ".\templates\report$($ConfigNo).json" | `
-        ConvertFrom-Json -Depth 10
-        $Report = @()
-        $Data | foreach-object {
-            $Report += new-query `
-            -Data $Data `
-            -Fields $Template.fields
-        }
-        $Report | format-Table -AutoSize
-    } # END PROCESS
-} # END FUNCTION
-
-function merge-reports {
-    [CmdletBinding()]
-    param (
-    )
-    begin {}
-    process {
-        $Title = "ezdata"
-        $Date = Get-Date
-        $Files = Get-ChildItem .\reports\*.csv -File
-        $Folder = "$($Date.toString('yyyy-MM-dd'))"
-        $Exists = Test-Path -Path ".\reports\$($Folder)" -PathType Container
-
-        if(!$Exists) {
-            Write-Host "`n[$($Title)]: .\reports\$($Folder) not found... creating it." -ForegroundColor Yellow
-            New-Item -Path ".\reports\$($Folder)" -ItemType Directory
-        }
-        Write-Host "`n[$($Title)]: Merging report files..." -ForegroundColor Blue
-        $Merge= @()
-        foreach($File in $Files) {
-
-            $Object = [ordered]@{
-                fileName = $File.Name
-                filePath = $File.FullName
-                groupName = $File.Name -Split '\-dm\-' | Select-Object -last 1
-                dataManager = $File.Name -Split '\-dm\-' | Select-Object -first 1
-            }
-            $Merge += (New-Object -TypeName psobject -Property $Object)
-        }
-
-        $Groups = $Merge| Group-Object groupName
-
-        foreach($Row in $Groups) {
-
-            $dataSet = @()
-            # IMPORT THE CSV FILES FOR THAT GROUP
-            $Row.Group | ForEach-Object {
-                $Import = Import-Csv $_.filePath
-                foreach($record in $Import) {
-                    $Object = $record
-                    $Object | Add-Member -NotePropertyName ppdm -NotePropertyValue $_.dataManager
-                    $dataSet += $Object
-                }
-                
-                $dataSet | Export-Csv ".\reports\$($Folder)\evt-$($_.groupName)"
-            }
-        } # END GROUPS
+        } # END SERVERS
     } # END PROCESS
 } # END FUNCTION
 
