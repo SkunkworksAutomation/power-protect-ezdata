@@ -3,8 +3,6 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 # What's new
 - **2026-08-11**
   - Added in the special paging type to cover usage of the copies-search REST API endpoint
-    - Please note that the copies-search REST API endpoint requires admin, limited admin, backup admin, or restore admin credentials
-    - The best practice is to use a read only set of credentials for reporting
   - When the reports run they will create a folder in the reports directory named "yyyy-MM-dd"
     - The report files will be dropped into the .\\reports\\"yyyy-MM-dd" folder
     - If there is more than one PowerProtect DM instance the module will automatically create a consolidated report for each report template
@@ -31,6 +29,8 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 # Notes
 > [!WARNING]
 > Some of these data extracts can potentially be very large. Ensure you are adjusting any parameters within reasonable ranges and using the correct paging methodology.
+> Please note that the copies-search REST API endpoint requires admin, limited admin, backup admin, or restore admin credentials
+> The best practice is to use a read only set of credentials for reporting
 
 # Getting started
 - Download the dm.utils.ezdata.psm1 module
