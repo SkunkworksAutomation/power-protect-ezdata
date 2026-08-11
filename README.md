@@ -1,5 +1,17 @@
-# PowerProtect ezdata (v20.1)
+# PowerProtect ezdata (v20.2)
 Create declarative data extracts for PowerProtect Data Manager. This PowerShell7 module will allow you to create data extracts for PowerProtect Data Manager without writing any code. It is very extensible for those with a PowerShell 7 skill set but it is definately not required for standard usage.
+# What's new
+- **2026-08-11**
+  - Added in the special paging type to cover usage of the copies-search REST API endpoing
+    - Please note that the copies-search REST API endpoint requires admin, limited admin, backup admin, or restore admin credentials
+    - The best practice is to use a read only set of credentials for reporting
+  - When the reports run they will create a folder in the reports directory named "yyyy-MM-dd"
+    - The report files will be dropped into the reports\"yyyy-MM-dd" folder
+    - If there is more than one PowerProtect DM instance the module will automatically create a consolidated report for each report template
+    - A column callled PPDM will be added to each of the colsolidated report files to identify the source PPDM server
+    - The report file names, which follow this convention {{ppdm_.fqdn}}-{{template_report_fileName}}, are used to create the consolidated reports
+    - We parse the complete file names and use a regular expression to find the "-" delimiter located after .com,.net or .local
+    - From there the reports are grouped by their {{template_report_fileName}} and consolidated. The source files are left in place, unmodified
 
 # Use case
 - Basic ad hoc reporting against a single rest api endpoint
@@ -234,11 +246,8 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
   ]
 }
 ```
-- Run the the following command to test our template against testdata2.json
-- C:\Reports\customers\ezdata> **test-extract -ConfigNo 2**
-![test-extract1](/Assets/test-extract1.png)
 
-- If it looks good then lets run a live extract against the API endpoint
+- Run the following command to see your output in the console
 - PS C:\Reports\customers\ezdata> **start-extract -Console**
 
 ![start-extract2](/Assets/start-extract-console2.png)
