@@ -3,6 +3,13 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
 # What's new
 - **2026-10-08**
   - Added containment operators in, and notin for querying against complex nested objects
+  - Example:
+  ```
+  {
+    "label": "ReplTrigger",
+    "value": "objectives|?type eq REPLICATION|operations|?triggerType in ON_SCHEDULE,RUN_AFTER_UPSTREAM|triggerType"
+  }
+  ```
 - **2026-08-11**
   - Added in the special paging type to cover usage of the copies-search REST API endpoint
   - When the reports run they will create a folder in the reports directory named "yyyy-MM-dd"
