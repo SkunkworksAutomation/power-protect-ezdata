@@ -19,6 +19,10 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
     "format":"json"
   }
   ```
+  - Result:
+  ```
+    {"month":null,"dayOfMonth":null,"daysOfWeek":["SUNDAY"],"weekOfMonth":null,"type":"WEEKLY","interval":null}
+  ```
 - **2026-08-11**
   - Added in the special paging type to cover usage of the copies-search REST API endpoint
   - When the reports run they will create a folder in the reports directory named "yyyy-MM-dd"
