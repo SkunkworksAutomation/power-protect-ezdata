@@ -647,10 +647,22 @@ function new-query {
                                     Where-Object {$_."$($Query.Value[0])" -eq $Query.Value[2]}
                                     break;
                                 }
+                                'in' {
+                                    # IN
+                                    $fieldValue = $fieldValue | `
+                                    Where-Object {$_."$($Query.Value[0])" -in ($Query.Value[2] -split ',')}
+                                    break;
+                                }
                                 'ne' {
                                     # NOT EQUALS
                                     $fieldValue = $fieldValue | `
                                     Where-Object {$_."$($Query.Value[0])" -ne $Query.Value[2]}
+                                    break;
+                                }
+                                'notin' {
+                                    # IN
+                                    $fieldValue = $fieldValue | `
+                                    Where-Object {$_."$($Query.Value[0])" -notin ($Query.Value[2] -split ',')}
                                     break;
                                 }
                                 'match' {

@@ -1,6 +1,8 @@
 # PowerProtect ezdata (v20.2)
 Create declarative data extracts for PowerProtect Data Manager. This PowerShell7 module will allow you to create data extracts for PowerProtect Data Manager without writing any code. It is very extensible for those with a PowerShell 7 skill set but it is definately not required for standard usage.
 # What's new
+- **2026-10-08**
+  - Added containment operators in, and notin for querying against complex nested objects
 - **2026-08-11**
   - Added in the special paging type to cover usage of the copies-search REST API endpoint
   - When the reports run they will create a folder in the reports directory named "yyyy-MM-dd"
