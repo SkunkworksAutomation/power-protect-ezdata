@@ -752,7 +752,14 @@ function new-query {
                 break;
             }
             default {
-                $formatted = $fieldValue
+                # $formatted = $fieldValue
+                if($null -eq $Field.format) {
+                    $formatted = $fieldValue
+                } elseif ($Field.format -eq "json") {
+                    $formatted = $fieldValue | ConvertTo-Json -Depth 10 -Compress
+                } else {
+                    $formatted = $fieldValue
+                }
                 break;
             }
         } # END SWITCH

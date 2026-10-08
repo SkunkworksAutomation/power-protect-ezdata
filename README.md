@@ -10,6 +10,15 @@ Create declarative data extracts for PowerProtect Data Manager. This PowerShell7
     "value": "objectives|?type eq REPLICATION|operations|?triggerType in ON_SCHEDULE,RUN_AFTER_UPSTREAM|triggerType"
   }
   ```
+  - Added a compressed JSON output for returning multiple values to a single data extract field 
+  - Example:
+  ```
+  {
+    "label": "ReplSchedule",
+    "value": "objectives|?type eq REPLICATION|operations|?triggerType in ON_SCHEDULE,RUN_AFTER_UPSTREAM|schedule.recurrence.pattern",
+    "format":"json"
+  }
+  ```
 - **2026-08-11**
   - Added in the special paging type to cover usage of the copies-search REST API endpoint
   - When the reports run they will create a folder in the reports directory named "yyyy-MM-dd"
